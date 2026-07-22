@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+<title>Seba Trainer</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Seba Trainer" />
+<meta name="theme-color" content="#09090b" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" type="image/png" href="icons/favicon.png" />
+<link rel="manifest" href="manifest.json" />
+<style>
+  :root{
+    --bg:#09090b; --surface:#18181b; --surface2:#0f0f11; --border:#27272a;
+    --text:#f4f4f5; --muted:#a1a1aa; --muted2:#71717a; --lime:#a3e635; --orange:#f97316;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;overscroll-behavior:none;}
+  #root{min-height:100vh;}
+  button{-webkit-user-select:none;user-select:none;touch-action:manipulation;}
+  button:active{transform:scale(0.97);}
+  img{-webkit-touch-callout:none;}
+  .wrap{min-height:100vh;width:100%;display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;}
+  .phone{width:100%;max-width:420px;background:var(--surface);border:6px solid var(--border);border-radius:2.5rem;box-shadow:0 25px 60px rgba(0,0,0,.6);overflow:hidden;display:flex;flex-direction:column;height:860px;}
+  .notch-row{background:var(--surface);padding:12px 0 4px;display:flex;justify-content:center;}
+  .notch{width:96px;height:20px;background:var(--surface2);border-radius:999px;}
+  .header{padding:8px 20px 16px;background:var(--surface);border-bottom:1px solid var(--border);}
+  .brand-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .header-right{display:flex;align-items:center;gap:8px;}
+  .ig-link{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;color:var(--muted2);border:1px solid var(--border);flex-shrink:0;}
+  .ig-link svg{width:14px;height:14px;}
+  .ig-link:active{color:var(--lime);border-color:#a3e63566;}
+  .brand{display:flex;align-items:center;gap:8px;}
+  .brand img{width:34px;height:34px;border-radius:9px;object-fit:cover;flex-shrink:0;}
+  .brand h1{font-size:19px;font-weight:800;letter-spacing:.03em;color:#fafafa;margin:0;text-transform:uppercase;line-height:1.1;}
+  .quota-tag{font-size:9px;color:var(--muted2);border:1px solid var(--border);border-radius:999px;padding:2px 8px;white-space:nowrap;display:flex;align-items:center;gap:4px;}
+  .quota-tag.live{color:var(--lime);border-color:#a3e63566;}
+  .live-dot{width:6px;height:6px;border-radius:999px;background:var(--lime);flex-shrink:0;}
+  .toggle{position:relative;display:flex;background:var(--surface2);border-radius:999px;padding:4px;border:1px solid var(--border);}
+  .toggle-slide{position:absolute;top:4px;bottom:4px;width:calc(50% - 4px);border-radius:999px;transition:left .25s ease, background .25s ease;}
+  .toggle-slide.entrenador{left:4px;background:var(--orange);}
+  .toggle-slide.usuario{left:calc(50% + 0px);background:var(--lime);}
+  .toggle-btn{position:relative;z-index:1;flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 0;border-radius:999px;font-size:14px;font-weight:600;background:transparent;border:none;color:var(--muted2);cursor:pointer;}
+  .toggle-btn.active{color:#09090b;}
+  .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .content::-webkit-scrollbar{width:0;}
+  .section{padding:16px;display:flex;flex-direction:column;gap:12px;}
+  .section-label{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.05em;padding:0 4px;}
+  .flash{font-size:12px;font-weight:600;color:var(--lime);transition:opacity .2s;}
+  .day-card{background:var(--surface2);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+  .day-head{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:transparent;border:none;cursor:pointer;color:inherit;}
+  .day-title{display:flex;align-items:center;gap:10px;}
+  .day-name{font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:#f4f4f5;}
+  .day-badge{font-size:11px;color:var(--muted2);background:var(--bg);padding:2px 8px;border-radius:999px;}
+  .day-body{padding:0 16px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;padding-top:12px;}
+  .empty-italic{font-size:13px;color:#52525b;font-style:italic;padding-bottom:4px;}
+  .ex-row{display:flex;align-items:flex-start;justify-content:space-between;background:var(--bg);border:1px solid #27272a99;border-radius:12px;padding:10px 12px;}
+  .ex-left{display:flex;gap:10px;}
+  .ex-thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;}
+  .ex-name{font-size:14px;font-weight:600;color:#f4f4f5;margin:0;}
+  .ex-meta{font-family:ui-monospace,'SFMono-Regular',Menlo,monospace;font-size:12px;color:var(--muted2);margin:2px 0 0;}
+  .ex-notes{font-size:12px;color:#52525b;margin:4px 0 0;}
+  .ex-comment{font-size:12px;color:var(--lime);margin:6px 0 0;display:flex;gap:5px;align-items:flex-start;background:#a3e63514;border-radius:8px;padding:6px 8px;}
+  .ex-comment svg{flex-shrink:0;margin-top:1px;}
+  .ex-actions{display:flex;gap:2px;flex-shrink:0;}
+  .icon-btn{background:transparent;border:none;color:var(--muted2);padding:6px;cursor:pointer;border-radius:8px;}
+  .icon-btn:hover{color:var(--lime);}
+  .icon-btn.danger:hover{color:var(--orange);}
+  .icon-btn.accent{color:var(--lime);}
+  .btn-add{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:700;color:#09090b;background:var(--lime);border:none;border-radius:12px;padding:10px 0;margin-top:4px;cursor:pointer;}
+  .form-card{background:var(--bg);border:1px solid #3f3f46;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;}
+  .form-input,.form-select{width:100%;background:var(--surface2);color:#f4f4f5;font-size:14px;border-radius:10px;padding:9px 12px;outline:none;border:1px solid var(--border);font-family:inherit;}
+  .form-select{appearance:none;-webkit-appearance:none;}
+  .form-input:focus,.form-select:focus{border-color:var(--lime);}
+  .form-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  .mono-input{font-family:ui-monospace,'SFMono-Regular',Menlo,monospace;}
+  .photo-row{display:flex;align-items:center;gap:8px;}
+  .photo-upload-label{position:relative;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);border:1px dashed #3f3f46;border-radius:10px;padding:10px 14px;cursor:pointer;overflow:hidden;}
+  .photo-upload-label:hover{border-color:var(--lime);}
+  .photo-upload-label input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .photo-thumb-wrap{position:relative;display:inline-block;}
+  .photo-thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
+  .photo-remove{position:absolute;top:-6px;right:-6px;background:var(--surface2);border:1px solid #3f3f46;border-radius:999px;padding:2px;color:var(--muted);cursor:pointer;display:flex;}
+  .form-actions{display:flex;gap:8px;padding-top:2px;}
+  .btn-primary{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--lime);color:#09090b;font-size:14px;font-weight:700;border:none;border-radius:10px;padding:10px 0;cursor:pointer;}
+  .btn-primary:disabled{background:#27272a;color:#52525b;cursor:not-allowed;}
+  .btn-ghost{padding:0 14px;display:flex;align-items:center;justify-content:center;color:var(--muted2);border:1px solid var(--border);border-radius:10px;background:transparent;cursor:pointer;}
+  .add-user-row{display:flex;flex-direction:column;gap:8px;}
+  .btn-square{background:var(--lime);color:#09090b;border:none;border-radius:12px;padding:10px 0;display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:700;cursor:pointer;}
+  .btn-square:disabled{background:#27272a;color:#52525b;}
+  .user-list{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto;padding-right:2px;}
+  .user-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;gap:6px;}
+  .user-item-left{display:flex;align-items:center;gap:10px;min-width:0;}
+  .user-avatar{width:28px;height:28px;border-radius:999px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--lime);flex-shrink:0;}
+  .user-name{font-size:14px;color:#e4e4e7;}
+  .user-sub{font-size:11px;color:var(--muted2);margin:1px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .empty-box{background:var(--surface2);border:1px dashed var(--border);border-radius:16px;padding:22px;text-align:center;}
+  .empty-box p{font-size:13px;color:var(--muted2);margin:0;}
+  .hello-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;}
+  .hello-text{font-size:14px;color:#d4d4d8;margin:0;}
+  .hello-name{color:var(--lime);font-weight:700;}
+  .switch-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted2);border:1px solid var(--border);border-radius:999px;padding:5px 10px;background:transparent;cursor:pointer;}
+  .week-card{background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:16px;}
+  .week-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .week-days{display:flex;justify-content:space-between;gap:6px;}
+  .day-dot{flex:1;height:36px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:transparent;color:#52525b;cursor:pointer;}
+  .day-dot.active-border{border-color:var(--lime);}
+  .day-dot.filled{background:var(--lime);color:#09090b;}
+  .day-dot.partial{background:#f9731633;color:#fb923c;}
+  .day-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 4px;}
+  .day-title-big{font-size:24px;font-weight:800;text-transform:uppercase;color:#fafafa;margin:0;}
+  .checklist{display:flex;flex-direction:column;gap:8px;}
+  .check-item{border-radius:12px;border:1px solid var(--border);background:var(--surface2);overflow:hidden;}
+  .check-item.done{background:#a3e6351a;border-color:#a3e63566;}
+  .check-toggle{width:100%;display:flex;align-items:center;gap:12px;padding:12px 14px;border:none;background:transparent;text-align:left;cursor:pointer;color:inherit;}
+  .check-circle{flex-shrink:0;width:24px;height:24px;border-radius:999px;border:2px solid #3f3f46;display:flex;align-items:center;justify-content:center;}
+  .check-circle.on{background:var(--lime);border-color:var(--lime);color:#09090b;}
+  .check-text .ex-name{font-size:14px;}
+  .check-text .ex-name.done{color:#71717a;text-decoration:line-through;}
+  .extra-row{padding:0 14px 12px 50px;display:flex;flex-direction:column;gap:8px;}
+  .weight-row{display:flex;align-items:center;gap:8px;}
+  .weight-row.set-done .weight-label{color:var(--lime);}
+  .set-check-btn{width:22px;height:22px;flex-shrink:0;border-radius:999px;border:1.5px solid var(--border);background:transparent;color:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}
+  .set-check-btn svg{width:12px;height:12px;}
+  .set-check-btn.on{background:var(--lime);border-color:var(--lime);color:#09090b;}
+  .weight-label{font-size:11px;color:var(--muted2);white-space:nowrap;}
+  .weight-input{width:96px;background:var(--bg);color:#e4e4e7;font-size:13px;border-radius:8px;padding:7px 10px;border:1px solid var(--border);outline:none;font-family:ui-monospace,'SFMono-Regular',Menlo,monospace;}
+  .weight-input:focus{border-color:var(--lime);}
+  .weight-unit{font-size:11px;color:var(--muted2);}
+  .comment-input{width:100%;background:var(--bg);color:#e4e4e7;font-size:12px;border-radius:8px;padding:8px 10px;border:1px solid var(--border);outline:none;resize:vertical;min-height:44px;font-family:inherit;}
+  .comment-input:focus{border-color:var(--lime);}
+  .reset-row{padding-top:6px;}
+  .btn-reset{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:600;color:var(--muted2);border:1px solid var(--border);border-radius:12px;padding:10px 0;background:transparent;cursor:pointer;}
+  .confirm-row{display:flex;gap:8px;}
+  .btn-confirm{flex:1;font-size:14px;font-weight:700;color:#09090b;background:var(--orange);border:none;border-radius:12px;padding:10px 0;cursor:pointer;}
+  .btn-cancel{padding:0 16px;font-size:14px;color:var(--muted2);border:1px solid var(--border);border-radius:12px;background:transparent;cursor:pointer;}
+  .loading-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;color:#71717a;font-size:14px;}
+  .editor-head{display:flex;align-items:center;gap:10px;padding:2px 4px 0;}
+  .back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:8px;display:flex;cursor:pointer;}
+  .editor-title{font-size:18px;font-weight:800;color:#fafafa;margin:0;text-transform:uppercase;letter-spacing:.02em;}
+  .auth-wrap{padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  .auth-logo{width:110px;height:110px;border-radius:20px;object-fit:cover;box-shadow:0 10px 30px rgba(0,0,0,.5);}
+  .auth-title{font-size:20px;font-weight:800;color:#fafafa;text-transform:uppercase;letter-spacing:.03em;margin:0;text-align:center;}
+  .auth-sub{font-size:12px;color:var(--muted2);text-align:center;margin:-6px 0 0;}
+  .auth-form{width:100%;display:flex;flex-direction:column;gap:10px;}
+  .auth-error{font-size:12px;color:#fb923c;text-align:center;margin:0;}
+  .auth-success{font-size:12px;color:var(--lime);text-align:center;margin:0;}
+  .auth-link{font-size:12px;color:var(--muted2);text-align:center;background:none;border:none;text-decoration:underline;cursor:pointer;padding:4px;}
+  .trainer-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;gap:8px;}
+  .topbar-actions{display:flex;gap:6px;flex-shrink:0;}
+  .recovery-question{font-size:13px;color:#e4e4e7;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center;}
+
+  .editor-tabs{display:flex;gap:6px;padding:2px 4px;}
+  .editor-tab{position:relative;flex:1;font-size:12px;font-weight:700;color:var(--muted2);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 4px;cursor:pointer;text-align:center;}
+  .editor-tab.active{color:#09090b;background:var(--lime);border-color:var(--lime);}
+  .chat-badge{position:absolute;top:-6px;right:-6px;background:var(--orange);color:#fff;font-size:10px;font-weight:800;border-radius:999px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+
+  .pdf-name-row{display:flex;align-items:center;justify-content:space-between;padding:0 4px 8px;}
+  .pdf-frame{width:100%;height:520px;border:1px solid var(--border);border-radius:12px;background:#fff;}
+
+  .chat-wrap{display:flex;flex-direction:column;height:520px;}
+  .chat-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px;}
+  .chat-bubble{max-width:78%;font-size:14px;line-height:1.35;padding:9px 12px;border-radius:14px;word-break:break-word;}
+  .chat-bubble.theirs{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);color:#e4e4e7;border-bottom-left-radius:4px;}
+  .chat-bubble.mine{align-self:flex-end;background:var(--lime);color:#09090b;border-bottom-right-radius:4px;}
+  .chat-input-row{display:flex;gap:8px;padding-top:8px;align-items:center;}
+  .chat-input-row .form-input{flex:1;}
+  .chat-input-row .icon-btn{background:var(--surface2);border:1px solid var(--border);}
+
+  .lightbox-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .lightbox-overlay img{max-width:100%;max-height:100%;border-radius:12px;object-fit:contain;}
+  .lightbox-close{position:absolute;top:18px;right:18px;background:var(--surface2);border:1px solid var(--border);color:#fff;border-radius:999px;padding:8px;cursor:pointer;}
+
+  .rest-timer{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--lime);border-radius:14px;padding:12px;margin:10px 4px;}
+  .rest-timer.finished{border-color:var(--orange);background:rgba(255,122,26,.12);}
+  .rest-timer-ring{position:relative;width:44px;height:44px;flex-shrink:0;}
+  .rest-timer-ring svg{width:44px;height:44px;transform:rotate(-90deg);}
+  .rt-bg{fill:none;stroke:var(--border);stroke-width:4;}
+  .rt-fg{fill:none;stroke:var(--lime);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset 1s linear;}
+  .rest-timer.finished .rt-fg{stroke:var(--orange);}
+  .rt-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;}
+  .rest-timer-info{flex:1;min-width:0;}
+  .rt-label{font-size:12.5px;font-weight:600;color:#e4e4e7;margin:0 0 6px 0;}
+  .rt-actions{display:flex;gap:6px;}
+  .rt-btn{font-size:11px;font-weight:700;color:#e4e4e7;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;}
+
+  .save-error-banner{display:flex;align-items:center;gap:8px;background:rgba(255,92,92,.12);border:1px solid #ff5c5c;color:#ffb4b4;border-radius:10px;padding:10px 12px;margin:8px 4px;font-size:12.5px;line-height:1.4;}
+  .save-error-banner svg{width:16px;height:16px;flex-shrink:0;}
+
+  @media (max-width: 480px), (display-mode: standalone){
+    .wrap{padding:0;min-height:100dvh;align-items:stretch;}
+    .phone{max-width:100%;height:100dvh;border:none;border-radius:0;box-shadow:none;}
+    .notch-row{display:none;}
+    .header{padding-top:max(10px, env(safe-area-inset-top));}
+    .content{padding-bottom:env(safe-area-inset-bottom);}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+/* ---------------- assets ---------------- */
+var LOGO_SRC = "data:image/jpeg;base64,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";
+var SECURITY_QUESTIONS = [
+  "¿Cuál es el nombre de tu primera mascota?",
+  "¿Cuál es tu comida favorita?",
+  "¿En qué ciudad naciste?",
+  "¿Cuál es tu color favorito?",
+  "¿Cuál es el nombre de tu mejor amigo de la infancia?"
+];
+var STORAGE_PREFIX = 'rutina-semanal:';
+var POLL_MS = 6000;
+
+/* ---------------- storage adapter ----------------
+   Claves marcadas "shared" (usuarios, rutinas, progreso, comentarios,
+   pesos, chats) se guardan en Cloud Firestore — así el entrenador y
+   cada cliente ven lo mismo en tiempo real, sin importar si abren la
+   app dentro de Claude o como página publicada (GitHub/Vercel/etc).
+   Claves NO compartidas (sesión activa, login del entrenador) quedan
+   solo en ESE dispositivo, usando localStorage.
+------------------------------------------------------ */
+var FIREBASE_PROJECT_ID = 'sebatrainer';
+var FIREBASE_API_KEY = 'AIzaSyBLapoCoHWzVrEuRijDjOQiatMSXIB0jp0';
+var FIRESTORE_BASE = 'https://firestore.googleapis.com/v1/projects/' + FIREBASE_PROJECT_ID + '/databases/(default)/documents/sebatrainer/';
+
+var usingLocalStorage = false;
+try { usingLocalStorage = typeof localStorage !== 'undefined'; } catch(e){ usingLocalStorage = false; }
+var usingRealStorage = true;
+var memoryStore = {};
+
+async function firestoreGet(key){
+  try {
+    var res = await fetch(FIRESTORE_BASE + encodeURIComponent(key) + '?key=' + FIREBASE_API_KEY);
+    if (res.status === 404) return null;
+    if (!res.ok) return null;
+    var data = await res.json();
+    return (data.fields && data.fields.value && data.fields.value.stringValue !== undefined) ? data.fields.value.stringValue : null;
+  } catch(e){ return null; }
+}
+async function firestoreSet(key, value){
+  try {
+    var body = { fields: { value: { stringValue: value }, updatedAt: { integerValue: String(Date.now()) } } };
+    var res = await fetch(FIRESTORE_BASE + encodeURIComponent(key) + '?key=' + FIREBASE_API_KEY, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    return res.ok;
+  } catch(e){ return false; }
+}
+async function firestoreDelete(key){
+  try {
+    var res = await fetch(FIRESTORE_BASE + encodeURIComponent(key) + '?key=' + FIREBASE_API_KEY, { method: 'DELETE' });
+    return res.ok;
+  } catch(e){ return false; }
+}
+
+async function storageGet(key, shared){
+  if (shared){
+    var v = await firestoreGet(key);
+    if (v !== null) return v;
+    if (window.storage){ try { var r = await window.storage.get(key, true); return r ? r.value : null; } catch(e){} }
+    return null;
+  }
+  if (window.storage){
+    try { var r2 = await window.storage.get(key, false); if (r2) return r2.value; } catch(e){}
+  }
+  if (usingLocalStorage){
+    try { return localStorage.getItem(STORAGE_PREFIX+key); } catch(e){}
+  }
+  return (key in memoryStore) ? memoryStore[key] : null;
+}
+async function storageSet(key, value, shared){
+  if (shared){
+    var ok = await firestoreSet(key, value);
+    if (window.storage){ try { await window.storage.set(key, value, true); } catch(e){} }
+    return ok;
+  }
+  if (window.storage){
+    try { await window.storage.set(key, value, false); return true; } catch(e){}
+  }
+  if (usingLocalStorage){
+    try { localStorage.setItem(STORAGE_PREFIX+key, value); return true; } catch(e){}
+  }
+  memoryStore[key] = value;
+  return true;
+}
+async function storageDelete(key, shared){
+  if (shared){
+    var ok = await firestoreDelete(key);
+    if (window.storage){ try { await window.storage.delete(key, true); } catch(e){} }
+    return ok;
+  }
+  if (window.storage){
+    try { await window.storage.delete(key, false); return true; } catch(e){}
+  }
+  if (usingLocalStorage){
+    try { localStorage.removeItem(STORAGE_PREFIX+key); return true; } catch(e){}
+  }
+  delete memoryStore[key];
+  return true;
+}
+
+/* ---------------- constants / helpers ---------------- */
+var DAY_NAMES = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+var DAY_LETTERS = ["L","M","M","J","V","S","D"];
+var MAX_USERS = 1000;
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function emptyRoutine(){
+  return { days: DAY_NAMES.map(function(name,i){ return { id:'day-'+i, name:name, exercises: [] }; }) };
+}
+function countExercises(routine){
+  if (!routine) return 0;
+  return routine.days.reduce(function(sum, d){ return sum + d.exercises.length; }, 0);
+}
+function normalizeAnswer(a){ return String(a||'').trim().toLowerCase(); }
+function isEditingSomething(){
+  var el = document.activeElement;
+  if (!el) return false;
+  var tag = el.tagName;
+  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+}
+
+function b64EncodeUnicode(str){
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1){ return String.fromCharCode(parseInt(p1,16)); }));
+}
+function b64DecodeUnicode(str){
+  return decodeURIComponent(atob(str).split('').map(function(c){ return '%'+('00'+c.charCodeAt(0).toString(16)).slice(-2); }).join(''));
+}
+
+function simpleHash(str){
+  var hash = 5381;
+  for (var i=0;i<str.length;i++){ hash = ((hash<<5)+hash) + str.charCodeAt(i); hash = hash|0; }
+  return 's' + Math.abs(hash).toString(36) + str.length.toString(36);
+}
+async function hashPassword(pw){
+  try {
+    if (window.crypto && window.crypto.subtle){
+      var enc = new TextEncoder().encode('rutina-salt-' + pw);
+      var buf = await window.crypto.subtle.digest('SHA-256', enc);
+      return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    }
+  } catch(e){}
+  return simpleHash(pw);
+}
+
+function compressImage(file){
+  return new Promise(function(resolve, reject){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        var maxW = 480;
+        var scale = Math.min(1, maxW / img.width);
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ---------------- icons ---------------- */
+function icon(name, cls){
+  var paths = {
+    dumbbell:'<path d="M4 9v6M2 10v4M20 9v6M22 10v4M8 8v8M16 8v8M8 12h8"/>',
+    user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/>',
+    lock:'<rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>',
+    key:'<circle cx="8" cy="15" r="4"/><path d="M10.5 12.5L20 3M20 3v5M20 3h-5"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    trash:'<path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/>',
+    x:'<path d="M18 6L6 18M6 6l12 12"/>',
+    check:'<path d="M20 6L9 17l-5-5"/>',
+    reset:'<path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+    chevronDown:'<path d="M6 9l6 6 6-6"/>',
+    chevronRight:'<path d="M9 18l6-6-6-6"/>',
+    chevronLeft:'<path d="M15 18l-6-6 6-6"/>',
+    pencil:'<path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>',
+    camera:'<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>',
+    swap:'<path d="M8 3L4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/>',
+    logout:'<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>',
+    help:'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 2-3 4"/><path d="M12 17h.01"/>',
+    share:'<path d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/>',
+    comment:'<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>',
+    file:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/>',
+    send:'<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>',
+    instagram:'<rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>'
+  };
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'+(cls||'')+'" style="width:16px;height:16px;">'+(paths[name]||'')+'</svg>';
+}
+
+/* ---------------- state ---------------- */
+var state = {
+  mode: 'entrenador',
+  users: [],
+  routines: {},
+  progress: {},
+  comments: {},
+  weights: {},
+  loading: true,
+
+  trainerAuth: null,
+  trainerLoggedIn: false,
+  trainerLoginError: '',
+  trainerSetupError: '',
+  trainerChangingPassword: false,
+
+  userLoginError: '',
+  userFormError: '',
+  pwChangeError: '',
+  resettingUserId: null,
+  pwResetFlash: false,
+
+  sharingUserId: null,
+  shareCopiedFlash: false,
+
+  importMode: false,
+  importError: '',
+
+  recoveryMode: null,
+  recoveryUserId: null,
+  recoveryQuestion: '',
+  recoveryError: '',
+  recoveryFlashMsg: '',
+
+  trainerEditingUserId: null,
+  openDayId: 'day-0',
+  addingToDay: null,
+  editingExercise: null,
+  pendingPhoto: null,
+  savedFlash: false,
+
+  activeUserId: null,
+  activeUserDayIndex: 0,
+  resetConfirm: false,
+
+  lightboxPhoto: null,
+
+  restTimer: null,
+
+  chats: {},
+  chatOpenFor: null,
+  userTab: 'rutina',
+  trainerEditorTab: 'rutina',
+  pendingPdf: null,
+  saveError: null,
+  setsDone: {}
+};
+
+/* ---------------- persistence (shared = visible live to everyone using this app link) ----------------
+   Nota: la rutina de cada cliente se guarda en SU PROPIO documento
+   ("routines-v1:<id-del-cliente>"), no todas juntas en un solo lugar.
+   Así, aunque un cliente tenga muchas fotos, no arriesga los datos de
+   los demás ni choca con el límite de tamaño de un solo documento. */
+async function persistRoutines(userId){
+  var uid_ = userId || state.trainerEditingUserId;
+  if (!uid_) return;
+  var routine = state.routines[uid_] || emptyRoutine();
+  var ok = await storageSet('routines-v1:' + uid_, JSON.stringify(routine), true);
+  if (ok === false){
+    state.saveError = 'No se pudo guardar. Puede que una foto o el PDF de la pauta sean muy pesados — probá con un archivo más liviano.';
+  } else {
+    state.saveError = null;
+    state.savedFlash = true;
+    setTimeout(function(){ state.savedFlash = false; render(); }, 1200);
+  }
+  render();
+}
+async function persistUsers(){ await storageSet('users-v1', JSON.stringify(state.users), true); }
+async function persistProgress(){ await storageSet('progress-v2', JSON.stringify(state.progress), true); }
+async function persistComments(){ await storageSet('comments-v1', JSON.stringify(state.comments), true); }
+async function persistWeights(){ await storageSet('weights-v1', JSON.stringify(state.weights), true); }
+async function persistChats(){ await storageSet('chats-v1', JSON.stringify(state.chats), true); }
+
+function ensureRoutine(userId){
+  if (!state.routines[userId]) state.routines[userId] = emptyRoutine();
+  return state.routines[userId];
+}
+
+/* ---------------- pauta alimenticia (PDF) ---------------- */
+var MAX_PDF_BASE64_CHARS = 650000; /* ~650KB en base64, deja margen bajo el límite de 1MB de Firestore */
+function setTrainerEditorTab(tab){ state.trainerEditorTab = tab; scrollToTopNext(); render(); }
+function handlePdfInput(input){
+  var file = input.files && input.files[0];
+  if (!file) return;
+  if (file.type !== 'application/pdf'){ alert('Por favor selecciona un archivo PDF.'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e){
+    if (e.target.result.length > MAX_PDF_BASE64_CHARS){
+      alert('Este PDF es muy pesado para guardarlo (máximo aprox. 450KB). Probá comprimirlo o exportarlo con menos calidad de imagen antes de subirlo.');
+      return;
+    }
+    var routine = ensureRoutine(state.trainerEditingUserId);
+    routine.dietPdf = e.target.result;
+    routine.dietPdfName = file.name;
+    state.routines[state.trainerEditingUserId] = routine;
+    persistRoutines(state.trainerEditingUserId);
+    render();
+  };
+  reader.readAsDataURL(file);
+}
+function removeDietPdf(){
+  var routine = ensureRoutine(state.trainerEditingUserId);
+  routine.dietPdf = null;
+  routine.dietPdfName = null;
+  state.routines[state.trainerEditingUserId] = routine;
+  persistRoutines(state.trainerEditingUserId);
+  render();
+}
+
+/* ---------------- live sync: poll shared data ---------------- */
+async function pollSharedData(){
+  if (!usingRealStorage) return;
+  if (isEditingSomething()) return;
+  try {
+    var uu = await storageGet('users-v1', true);
+    var pp = await storageGet('progress-v2', true);
+    var cc = await storageGet('comments-v1', true);
+    var ww = await storageGet('weights-v1', true);
+    var chch = await storageGet('chats-v1', true);
+    var sd = await storageGet('setsdone-v1', true);
+    var changed = false;
+    if (uu){ var newUsers = JSON.stringify(state.users); if (uu !== newUsers){ state.users = JSON.parse(uu); changed = true; } }
+    if (pp){ var newProg = JSON.stringify(state.progress); if (pp !== newProg){ state.progress = JSON.parse(pp); changed = true; } }
+    if (cc){ var newComments = JSON.stringify(state.comments); if (cc !== newComments){ state.comments = JSON.parse(cc); changed = true; } }
+    if (ww){ var newWeights = JSON.stringify(state.weights); if (ww !== newWeights){ state.weights = JSON.parse(ww); changed = true; } }
+    if (chch){ var newChats = JSON.stringify(state.chats); if (chch !== newChats){ state.chats = JSON.parse(chch); changed = true; } }
+    if (sd){ var newSetsDone = JSON.stringify(state.setsDone); if (sd !== newSetsDone){ state.setsDone = JSON.parse(sd); changed = true; } }
+
+    if (!state.addingToDay && !state.editingExercise){
+      var results = await Promise.all(state.users.map(function(u){
+        return storageGet('routines-v1:' + u.id, true).then(function(v){ return { id: u.id, value: v }; });
+      }));
+      results.forEach(function(r){
+        if (r.value === null) return;
+        var current = JSON.stringify(state.routines[r.id] || null);
+        if (r.value !== current){
+          state.routines[r.id] = JSON.parse(r.value);
+          changed = true;
+        }
+      });
+    }
+    if (changed) render();
+  } catch(e){}
+}
+
+/* ---------------- actions: mode / navigation ---------------- */
+function setMode(m){
+  state.mode = m;
+  state.trainerLoginError = ''; state.userLoginError = ''; state.userFormError = '';
+  state.recoveryMode = null; state.recoveryError = ''; state.recoveryFlashMsg = '';
+  state.importMode = false; state.importError = '';
+  scrollToTopNext();
+  render();
+}
+
+function openUserRoutine(userId){
+  ensureRoutine(userId);
+  state.trainerEditingUserId = userId;
+  state.openDayId = 'day-0';
+  state.addingToDay = null;
+  state.editingExercise = null;
+  state.trainerEditorTab = 'rutina';
+  scrollToTopNext();
+  render();
+}
+function closeUserRoutine(){ state.trainerEditingUserId = null; scrollToTopNext(); render(); }
+
+/* ---------------- actions: trainer auth ---------------- */
+async function submitTrainerSetup(){
+  var username = document.getElementById('setup-username').value.trim();
+  var p1 = document.getElementById('setup-password').value;
+  var p2 = document.getElementById('setup-password2').value;
+  var question = document.getElementById('setup-question').value;
+  var answer = document.getElementById('setup-answer').value;
+  state.trainerSetupError = '';
+  if (!username || !p1){ state.trainerSetupError = 'Completa usuario y contraseña.'; render(); return; }
+  if (p1.length < 4){ state.trainerSetupError = 'La contraseña debe tener al menos 4 caracteres.'; render(); return; }
+  if (p1 !== p2){ state.trainerSetupError = 'Las contraseñas no coinciden.'; render(); return; }
+  if (!answer.trim()){ state.trainerSetupError = 'Responde la pregunta de seguridad — la usarás para recuperar tu clave.'; render(); return; }
+  var passHash = await hashPassword(p1);
+  var answerHash = await hashPassword(normalizeAnswer(answer));
+  state.trainerAuth = { username: username, passHash: passHash, question: question, answerHash: answerHash };
+  await storageSet('trainer-auth-v1', JSON.stringify(state.trainerAuth), false);
+  state.trainerLoggedIn = true;
+  storageSet('trainer-session-v1', JSON.stringify(true), false);
+  render();
+}
+async function attemptTrainerLogin(){
+  var username = document.getElementById('trainer-login-username').value.trim();
+  var password = document.getElementById('trainer-login-password').value;
+  state.trainerLoginError = '';
+  if (!state.trainerAuth || username.toLowerCase() !== state.trainerAuth.username.toLowerCase()){
+    state.trainerLoginError = 'Usuario o contraseña incorrectos.'; render(); return;
+  }
+  var hash = await hashPassword(password);
+  if (hash !== state.trainerAuth.passHash){
+    state.trainerLoginError = 'Usuario o contraseña incorrectos.'; render(); return;
+  }
+  state.trainerLoggedIn = true;
+  storageSet('trainer-session-v1', JSON.stringify(true), false);
+  render();
+}
+function trainerLogout(){
+  state.trainerLoggedIn = false;
+  state.trainerEditingUserId = null;
+  state.trainerChangingPassword = false;
+  storageSet('trainer-session-v1', JSON.stringify(false), false);
+  render();
+}
+function toggleTrainerPasswordForm(){
+  state.trainerChangingPassword = !state.trainerChangingPassword;
+  state.pwChangeError = '';
+  render();
+}
+function cancelTrainerPasswordForm(){ state.trainerChangingPassword = false; state.pwChangeError = ''; render(); }
+async function submitTrainerPasswordReset(){
+  var p1 = document.getElementById('trainer-newpw1').value;
+  var p2 = document.getElementById('trainer-newpw2').value;
+  state.pwChangeError = '';
+  if (!p1 || p1.length < 4){ state.pwChangeError = 'Mínimo 4 caracteres.'; render(); return; }
+  if (p1 !== p2){ state.pwChangeError = 'Las contraseñas no coinciden.'; render(); return; }
+  var hash = await hashPassword(p1);
+  state.trainerAuth = Object.assign({}, state.trainerAuth, { passHash: hash });
+  await storageSet('trainer-auth-v1', JSON.stringify(state.trainerAuth), false);
+  state.trainerChangingPassword = false;
+  state.pwResetFlash = true;
+  render();
+  setTimeout(function(){ state.pwResetFlash = false; render(); }, 1500);
+}
+
+/* ---------------- actions: password recovery (self-service) ---------------- */
+function startUserRecovery(){ state.recoveryMode = 'user-lookup'; state.recoveryError = ''; render(); }
+function startTrainerRecovery(){ state.recoveryMode = 'trainer-lookup'; state.recoveryError = ''; render(); }
+function cancelRecovery(){
+  state.recoveryMode = null; state.recoveryError = ''; state.recoveryUserId = null; state.recoveryQuestion = '';
+  render();
+}
+function lookupUserForRecovery(){
+  var username = document.getElementById('recovery-username').value.trim();
+  state.recoveryError = '';
+  var user = state.users.find(function(u){ return u.username.toLowerCase()===username.toLowerCase(); });
+  if (!user || !user.question){ state.recoveryError = 'No encontramos ese usuario, o no tiene pregunta de seguridad configurada.'; render(); return; }
+  state.recoveryUserId = user.id;
+  state.recoveryQuestion = user.question;
+  state.recoveryMode = 'user-answer';
+  render();
+}
+async function submitUserRecovery(){
+  var answer = document.getElementById('recovery-answer').value;
+  var p1 = document.getElementById('recovery-newpw1').value;
+  var p2 = document.getElementById('recovery-newpw2').value;
+  state.recoveryError = '';
+  var user = state.users.find(function(u){ return u.id===state.recoveryUserId; });
+  if (!user){ state.recoveryError = 'Ocurrió un error, intenta de nuevo.'; render(); return; }
+  var answerHash = await hashPassword(normalizeAnswer(answer));
+  if (answerHash !== user.answerHash){ state.recoveryError = 'La respuesta no es correcta.'; render(); return; }
+  if (!p1 || p1.length < 4){ state.recoveryError = 'La nueva contraseña debe tener al menos 4 caracteres.'; render(); return; }
+  if (p1 !== p2){ state.recoveryError = 'Las contraseñas no coinciden.'; render(); return; }
+  var passHash = await hashPassword(p1);
+  state.users = state.users.map(function(u){ return u.id===user.id ? Object.assign({}, u, { passHash: passHash }) : u; });
+  persistUsers();
+  state.recoveryMode = null; state.recoveryUserId = null; state.recoveryQuestion = '';
+  state.recoveryFlashMsg = 'Tu contraseña se actualizó. Ya puedes iniciar sesión.';
+  render();
+}
+function lookupTrainerForRecovery(){
+  var username = document.getElementById('trainer-recovery-username').value.trim();
+  state.recoveryError = '';
+  if (!state.trainerAuth || username.toLowerCase() !== state.trainerAuth.username.toLowerCase() || !state.trainerAuth.question){
+    state.recoveryError = 'Usuario no encontrado o sin pregunta de seguridad.'; render(); return;
+  }
+  state.recoveryQuestion = state.trainerAuth.question;
+  state.recoveryMode = 'trainer-answer';
+  render();
+}
+async function submitTrainerRecovery(){
+  var answer = document.getElementById('trainer-recovery-answer').value;
+  var p1 = document.getElementById('trainer-recovery-newpw1').value;
+  var p2 = document.getElementById('trainer-recovery-newpw2').value;
+  state.recoveryError = '';
+  var answerHash = await hashPassword(normalizeAnswer(answer));
+  if (answerHash !== state.trainerAuth.answerHash){ state.recoveryError = 'La respuesta no es correcta.'; render(); return; }
+  if (!p1 || p1.length < 4){ state.recoveryError = 'La nueva contraseña debe tener al menos 4 caracteres.'; render(); return; }
+  if (p1 !== p2){ state.recoveryError = 'Las contraseñas no coinciden.'; render(); return; }
+  var passHash = await hashPassword(p1);
+  state.trainerAuth = Object.assign({}, state.trainerAuth, { passHash: passHash });
+  await storageSet('trainer-auth-v1', JSON.stringify(state.trainerAuth), false);
+  state.recoveryMode = null; state.recoveryQuestion = '';
+  state.recoveryFlashMsg = 'Tu contraseña se actualizó. Ya puedes iniciar sesión.';
+  render();
+}
+
+/* ---------------- actions: share code (trainer -> student device, for offline/no-live-link use) ---------------- */
+function buildUserExportCode(userId){
+  var user = state.users.find(function(u){ return u.id===userId; });
+  if (!user) return '';
+  var routine = state.routines[userId] || emptyRoutine();
+  var payload = { v: 1, user: user, routine: routine };
+  return b64EncodeUnicode(JSON.stringify(payload));
+}
+function startShareUser(id){ state.sharingUserId = id; state.shareCopiedFlash = false; render(); }
+function cancelShareUser(){ state.sharingUserId = null; render(); }
+function copyShareCode(){
+  var el = document.getElementById('share-code-text');
+  if (!el) return;
+  el.focus(); el.select();
+  try { el.setSelectionRange(0, 999999); } catch(e){}
+  var copied = false;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(el.value);
+      copied = true;
+    }
+  } catch(e){}
+  if (!copied){
+    try { document.execCommand('copy'); } catch(e){}
+  }
+  state.shareCopiedFlash = true; render();
+  setTimeout(function(){ state.shareCopiedFlash = false; render(); }, 1600);
+}
+
+function toggleImportMode(){ state.importMode = true; state.importError = ''; render(); }
+function cancelImportMode(){ state.importMode = false; state.importError = ''; render(); }
+function importStudentCode(){
+  var raw = document.getElementById('import-code-text').value.trim();
+  state.importError = '';
+  if (!raw){ state.importError = 'Pega el código primero.'; render(); return; }
+  var payload;
+  try { payload = JSON.parse(b64DecodeUnicode(raw)); } catch(e){ state.importError = 'Código inválido o incompleto.'; render(); return; }
+  if (!payload || !payload.user || !payload.routine || !payload.user.username){
+    state.importError = 'Código inválido o incompleto.'; render(); return;
+  }
+  var incoming = payload.user;
+  var existingIdx = state.users.findIndex(function(u){ return u.username.toLowerCase()===incoming.username.toLowerCase(); });
+  var finalId;
+  if (existingIdx >= 0){
+    finalId = state.users[existingIdx].id;
+    state.users[existingIdx] = Object.assign({}, incoming, { id: finalId });
+  } else {
+    finalId = incoming.id || uid();
+    state.users.push(Object.assign({}, incoming, { id: finalId }));
+  }
+  state.routines[finalId] = payload.routine;
+  persistUsers();
+  persistRoutines(finalId);
+  state.importMode = false;
+  selectUser(finalId);
+}
+
+/* ---------------- actions: trainer routine editing ---------------- */
+function toggleDay(dayId){ state.openDayId = (state.openDayId === dayId) ? null : dayId; render(); }
+
+function startAddExercise(dayId){
+  state.addingToDay = dayId; state.editingExercise = null; state.pendingPhoto = null; render();
+}
+function startEditExercise(dayId, exId){
+  var routine = ensureRoutine(state.trainerEditingUserId);
+  var day = routine.days.find(function(d){ return d.id===dayId; });
+  var ex = day.exercises.find(function(e){ return e.id===exId; });
+  state.editingExercise = { dayId: dayId, exId: exId };
+  state.addingToDay = null;
+  state.pendingPhoto = ex.photo || null;
+  render();
+}
+function cancelExerciseForm(){
+  state.addingToDay = null; state.editingExercise = null; state.pendingPhoto = null; render();
+}
+function saveExercise(){
+  var nameEl = document.getElementById('draft-name');
+  if (!nameEl) return;
+  var name = nameEl.value.trim();
+  if (!name) return;
+  var series = document.getElementById('draft-series').value.trim();
+  var reps = document.getElementById('draft-reps').value.trim();
+  var descansoSel = document.getElementById('draft-descanso').value;
+  var descanso = descansoSel === 'custom'
+    ? (document.getElementById('draft-descanso-custom').value.trim() || '')
+    : descansoSel;
+  var notas = document.getElementById('draft-notas').value.trim();
+  var photo = state.pendingPhoto || null;
+  var routine = ensureRoutine(state.trainerEditingUserId);
+
+  if (state.addingToDay){
+    var dayId = state.addingToDay;
+    var ex = { id: uid(), name: name, series: series, reps: reps, descanso: descanso, notas: notas, photo: photo };
+    routine.days = routine.days.map(function(d){
+      return d.id===dayId ? Object.assign({}, d, { exercises: d.exercises.concat([ex]) }) : d;
+    });
+    state.addingToDay = null;
+  } else if (state.editingExercise){
+    var edId = state.editingExercise.dayId, exId = state.editingExercise.exId;
+    routine.days = routine.days.map(function(d){
+      if (d.id !== edId) return d;
+      return Object.assign({}, d, {
+        exercises: d.exercises.map(function(e){
+          return e.id===exId ? Object.assign({}, e, { name:name, series:series, reps:reps, descanso:descanso, notas:notas, photo:photo }) : e;
+        })
+      });
+    });
+    state.editingExercise = null;
+  }
+  state.routines[state.trainerEditingUserId] = routine;
+  state.pendingPhoto = null;
+  persistRoutines(state.trainerEditingUserId);
+  render();
+}
+function deleteExercise(dayId, exId){
+  var routine = ensureRoutine(state.trainerEditingUserId);
+  routine.days = routine.days.map(function(d){
+    return d.id===dayId ? Object.assign({}, d, { exercises: d.exercises.filter(function(e){ return e.id!==exId; }) }) : d;
+  });
+  state.routines[state.trainerEditingUserId] = routine;
+  persistRoutines(state.trainerEditingUserId);
+  render();
+}
+function handlePhotoInput(input){
+  var file = input.files && input.files[0];
+  if (!file) return;
+  compressImage(file).then(function(dataUrl){
+    state.pendingPhoto = dataUrl;
+    var holder = document.getElementById('photo-preview');
+    if (holder) holder.outerHTML = renderPhotoPreview();
+  }).catch(function(e){ console.error('No se pudo procesar la imagen', e); });
+}
+function removePendingPhoto(){
+  state.pendingPhoto = null;
+  var holder = document.getElementById('photo-preview');
+  if (holder) holder.outerHTML = renderPhotoPreview();
+}
+
+/* ---------------- actions: users roster ---------------- */
+async function addUser(){
+  var nameEl = document.getElementById('new-user-name');
+  var userEl = document.getElementById('new-user-username');
+  var passEl = document.getElementById('new-user-password');
+  var questionEl = document.getElementById('new-user-question');
+  var answerEl = document.getElementById('new-user-answer');
+  var name = nameEl.value.trim();
+  var username = userEl.value.trim();
+  var password = passEl.value;
+  var question = questionEl.value;
+  var answer = answerEl.value;
+  state.userFormError = '';
+  if (state.users.length >= MAX_USERS) return;
+  if (!name || !username || !password){ state.userFormError = 'Completa nombre, usuario y contraseña.'; render(); return; }
+  if (password.length < 4){ state.userFormError = 'La contraseña debe tener al menos 4 caracteres.'; render(); return; }
+  if (!answer.trim()){ state.userFormError = 'Responde la pregunta de seguridad — servirá para recuperar la clave.'; render(); return; }
+  var exists = state.users.some(function(u){ return u.username.toLowerCase()===username.toLowerCase(); });
+  if (exists){ state.userFormError = 'Ese nombre de usuario ya existe.'; render(); return; }
+  var passHash = await hashPassword(password);
+  var answerHash = await hashPassword(normalizeAnswer(answer));
+  state.users.push({ id: uid(), name: name, username: username, passHash: passHash, question: question, answerHash: answerHash });
+  persistUsers();
+  render();
+}
+function handleUserKey(e){ if (e.key === 'Enter') addUser(); }
+function deleteUser(id){
+  state.users = state.users.filter(function(u){ return u.id!==id; });
+  if (state.activeUserId === id) state.activeUserId = null;
+  if (state.trainerEditingUserId === id) state.trainerEditingUserId = null;
+  if (state.resettingUserId === id) state.resettingUserId = null;
+  if (state.sharingUserId === id) state.sharingUserId = null;
+  delete state.progress[id];
+  delete state.routines[id];
+  delete state.comments[id];
+  delete state.weights[id];
+  delete state.chats[id];
+  delete state.setsDone[id];
+  persistUsers();
+  persistProgress();
+  storageDelete('routines-v1:' + id, true);
+  persistComments();
+  persistWeights();
+  persistChats();
+  persistSetsDone();
+  render();
+}
+function startResetPassword(id){ state.resettingUserId = id; state.pwChangeError = ''; render(); }
+function cancelResetPassword(){ state.resettingUserId = null; state.pwChangeError = ''; render(); }
+async function confirmResetPassword(id){
+  var p1 = document.getElementById('reset-pw1').value;
+  var p2 = document.getElementById('reset-pw2').value;
+  state.pwChangeError = '';
+  if (!p1 || p1.length < 4){ state.pwChangeError = 'Mínimo 4 caracteres.'; render(); return; }
+  if (p1 !== p2){ state.pwChangeError = 'Las contraseñas no coinciden.'; render(); return; }
+  var hash = await hashPassword(p1);
+  state.users = state.users.map(function(u){ return u.id===id ? Object.assign({}, u, { passHash: hash }) : u; });
+  persistUsers();
+  state.resettingUserId = null;
+  state.pwResetFlash = true;
+  render();
+  setTimeout(function(){ state.pwResetFlash = false; render(); }, 1500);
+}
+
+/* ---------------- actions: user session / checklist ---------------- */
+async function attemptUserLogin(){
+  var username = document.getElementById('login-username').value.trim();
+  var password = document.getElementById('login-password').value;
+  state.userLoginError = '';
+  var user = state.users.find(function(u){ return u.username.toLowerCase()===username.toLowerCase(); });
+  if (!user){ state.userLoginError = 'Usuario o contraseña incorrectos.'; render(); return; }
+  var hash = await hashPassword(password);
+  if (hash !== user.passHash){ state.userLoginError = 'Usuario o contraseña incorrectos.'; render(); return; }
+  selectUser(user.id);
+}
+function handleLoginKey(e){ if (e.key === 'Enter') attemptUserLogin(); }
+function selectUser(id){
+  state.activeUserId = id;
+  storageSet('active-user-v1', JSON.stringify(id), false);
+  state.activeUserDayIndex = 0;
+  render();
+}
+function backToPicker(){
+  state.activeUserId = null;
+  storageSet('active-user-v1', JSON.stringify(null), false);
+  scrollToTopNext();
+  render();
+}
+function setActiveUserDay(idx){ state.activeUserDayIndex = idx; scrollToTopNext(); render(); }
+function toggleCheck(dayId, exId){
+  if (!state.activeUserId) return;
+  var userId = state.activeUserId;
+  if (!state.progress[userId]) state.progress[userId] = {};
+  if (!state.progress[userId][dayId]) state.progress[userId][dayId] = {};
+  var willBeChecked = !state.progress[userId][dayId][exId];
+  state.progress[userId][dayId][exId] = willBeChecked;
+  persistProgress();
+  if (willBeChecked) startRestTimer(dayId, exId);
+  render();
+}
+async function persistSetsDone(){ await storageSet('setsdone-v1', JSON.stringify(state.setsDone), true); }
+function toggleSetDone(dayId, exId, setIdx){
+  if (!state.activeUserId) return;
+  var userId = state.activeUserId;
+  if (!state.setsDone[userId]) state.setsDone[userId] = {};
+  if (!state.setsDone[userId][dayId]) state.setsDone[userId][dayId] = {};
+  if (!state.setsDone[userId][dayId][exId]) state.setsDone[userId][dayId][exId] = [];
+  var arr = state.setsDone[userId][dayId][exId];
+  var willBeDone = !arr[setIdx];
+  arr[setIdx] = willBeDone;
+  persistSetsDone();
+
+  if (willBeDone){
+    startRestTimer(dayId, exId);
+    /* Si con esta serie ya se completaron todas, marcamos el ejercicio entero como hecho */
+    var routine = state.routines[userId];
+    var day = routine && routine.days.find(function(d){ return d.id===dayId; });
+    var ex = day && day.exercises.find(function(e){ return e.id===exId; });
+    if (ex){
+      var total = getSeriesCount(ex);
+      var doneCount = 0;
+      for (var i=0; i<total; i++){ if (arr[i]) doneCount++; }
+      if (doneCount >= total){
+        if (!state.progress[userId]) state.progress[userId] = {};
+        if (!state.progress[userId][dayId]) state.progress[userId][dayId] = {};
+        if (!state.progress[userId][dayId][exId]){
+          state.progress[userId][dayId][exId] = true;
+          persistProgress();
+        }
+      }
+    }
+  }
+  render();
+}
+
+/* ---------------- temporizador de descanso ---------------- */
+var restTimerInterval = null;
+var pendingScrollReset = false;
+function scrollToTopNext(){ pendingScrollReset = true; }
+function formatSecondsLabel(sec){
+  sec = parseInt(sec, 10) || 0;
+  if (sec <= 0) return '';
+  if (sec < 60) return sec + ' seg';
+  var m = Math.floor(sec/60), s = sec%60;
+  return s === 0 ? (m + ' min') : (m + ' min ' + s + ' seg');
+}
+var DESCANSO_PRESETS = [15,30,45,60,90,120,150,180,240,300];
+
+/* Lista de nombres comunes para autocompletar al escribir (sin fotos —
+   el entrenador sube su propia foto para cada ejercicio, como siempre). */
+var EXERCISE_LIBRARY = [
+  "Press banca plano","Press banca inclinado","Press banca declinado","Press banca en máquina",
+  "Press militar","Press militar con mancuernas","Press Arnold","Elevaciones laterales",
+  "Elevaciones frontales","Pájaros / aperturas posteriores","Face pull",
+  "Aperturas con mancuernas","Cruce de poleas","Fondos en paralelas","Fondos para tríceps",
+  "Extensión de tríceps en polea","Press francés","Patada de tríceps","Curl de bíceps con barra",
+  "Curl de bíceps con mancuernas","Curl martillo","Curl concentrado","Curl en banco Scott",
+  "Dominadas","Jalón al pecho","Remo con barra","Remo con mancuerna","Remo en máquina",
+  "Remo en polea baja","Peso muerto","Peso muerto rumano","Peso muerto sumo",
+  "Sentadilla","Sentadilla búlgara","Sentadilla frontal","Sentadilla hack","Prensa de piernas",
+  "Extensión de cuádriceps","Curl femoral","Zancadas","Elevación de talones / gemelos en pie",
+  "Elevación de talones sentado","Hip thrust","Puente de glúteos","Abducción de cadera en máquina",
+  "Plancha abdominal","Crunch abdominal","Elevación de piernas","Rueda abdominal",
+  "Giro ruso","Encogimientos para trapecio","Remo en máquina T","Jalón tras nuca",
+  "Press de pecho en máquina","Contractor de pecho (peck deck)","Remo invertido",
+  "Sentadilla goblet","Zancadas caminando","Step up","Buenos días","Hiperextensión lumbar"
+];
+
+function parseDescansoToSeconds(text){
+  if (!text) return 0;
+  text = String(text).toLowerCase().trim();
+  var mmss = text.match(/^(\d+):(\d{1,2})$/);
+  if (mmss) return (parseInt(mmss[1],10)*60) + parseInt(mmss[2],10);
+  var totalSeconds = 0;
+  var minMatch = text.match(/(\d+(?:[.,]\d+)?)\s*(?:min|m)\b/);
+  var secMatch = text.match(/(\d+(?:[.,]\d+)?)\s*(?:seg|sec|s)\b/);
+  if (minMatch) totalSeconds += Math.round(parseFloat(minMatch[1].replace(',','.')) * 60);
+  if (secMatch) totalSeconds += Math.round(parseFloat(secMatch[1].replace(',','.')));
+  if (!minMatch && !secMatch){
+    var justNumber = text.match(/(\d+(?:[.,]\d+)?)/);
+    if (justNumber) totalSeconds = Math.round(parseFloat(justNumber[1].replace(',','.')));
+  }
+  return totalSeconds;
+}
+function findNextExerciseLabel(dayId, exId){
+  var routine = state.routines[state.activeUserId];
+  if (!routine) return '';
+  var day = routine.days.find(function(d){ return d.id===dayId; });
+  if (!day) return '';
+  var idx = day.exercises.findIndex(function(e){ return e.id===exId; });
+  if (idx === -1) return '';
+  var next = day.exercises[idx+1];
+  return next ? next.name : '';
+}
+function startRestTimer(dayId, exId){
+  var routine = state.routines[state.activeUserId];
+  if (!routine) return;
+  var day = routine.days.find(function(d){ return d.id===dayId; });
+  var ex = day ? day.exercises.find(function(e){ return e.id===exId; }) : null;
+  var seconds = ex ? parseDescansoToSeconds(ex.descanso) : 0;
+  if (!seconds || seconds <= 0) return;
+  if (restTimerInterval) clearInterval(restTimerInterval);
+  state.restTimer = {
+    dayId: dayId,
+    exId: exId,
+    total: seconds,
+    remaining: seconds,
+    exName: ex.name,
+    nextName: findNextExerciseLabel(dayId, exId),
+    finished: false
+  };
+  restTimerInterval = setInterval(restTimerTick, 1000);
+  render();
+}
+function restTimerTick(){
+  var t = state.restTimer;
+  if (!t){ clearInterval(restTimerInterval); restTimerInterval = null; return; }
+  t.remaining -= 1;
+  if (t.remaining <= 0){
+    clearInterval(restTimerInterval);
+    restTimerInterval = null;
+    t.remaining = 0;
+    t.finished = true;
+    playRestTimerSound();
+    if (navigator.vibrate) navigator.vibrate([300,150,300,150,300]);
+    render();
+    return;
+  }
+  updateRestTimerDOM();
+}
+function updateRestTimerDOM(){
+  var t = state.restTimer;
+  if (!t) return;
+  var timeEl = document.getElementById('rt-time-text');
+  var ringEl = document.getElementById('rt-fg-circle');
+  if (!timeEl || !ringEl) return; /* no está visible ahora mismo: no pasa nada, el interval sigue igual */
+  var mm = Math.floor(Math.max(t.remaining,0)/60);
+  var ss = Math.max(t.remaining,0)%60;
+  timeEl.textContent = (mm<10?'0':'')+mm+':'+(ss<10?'0':'')+ss;
+  var pct = Math.max(0, Math.min(1, t.remaining / t.total));
+  ringEl.style.strokeDashoffset = (119.4*(1-pct));
+}
+function dismissRestTimer(){
+  if (restTimerInterval){ clearInterval(restTimerInterval); restTimerInterval = null; }
+  state.restTimer = null;
+  render();
+}
+function addRestTimerSeconds(extra){
+  if (!state.restTimer) return;
+  state.restTimer.remaining += extra;
+  state.restTimer.total += extra;
+  if (state.restTimer.finished){
+    state.restTimer.finished = false;
+    restTimerInterval = setInterval(restTimerTick, 1000);
+  }
+  render();
+}
+function playRestTimerSound(){
+  try {
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    var ctx = new Ctx();
+    var startAt = ctx.currentTime;
+    [0, 0.35, 0.7].forEach(function(offset){
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.001, startAt+offset);
+      gain.gain.linearRampToValueAtTime(0.35, startAt+offset+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, startAt+offset+0.28);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(startAt+offset);
+      osc.stop(startAt+offset+0.3);
+    });
+  } catch(e){}
+}
+function renderRestTimerBar(){
+  var t = state.restTimer;
+  if (!t) return '';
+  var mm = Math.floor(Math.max(t.remaining,0)/60);
+  var ss = Math.max(t.remaining,0)%60;
+  var timeStr = (mm<10?'0':'')+mm+':'+(ss<10?'0':'')+ss;
+  var pct = Math.max(0, Math.min(1, t.remaining / t.total));
+  var label = t.finished
+    ? (t.nextName ? '¡Descanso terminado! Sigue con: '+esc(t.nextName) : '¡Descanso terminado! Sigue con el próximo ejercicio')
+    : 'Descansando después de '+esc(t.exName);
+  return '<div class="rest-timer'+(t.finished?' finished':'')+'">' +
+    '<div class="rest-timer-ring"><svg viewBox="0 0 44 44"><circle class="rt-bg" cx="22" cy="22" r="19"></circle>' +
+      '<circle id="rt-fg-circle" class="rt-fg" cx="22" cy="22" r="19" style="stroke-dasharray:119.4;stroke-dashoffset:'+(119.4*(1-pct))+'"></circle></svg>' +
+      '<span id="rt-time-text" class="rt-time">'+timeStr+'</span></div>' +
+    '<div class="rest-timer-info"><p class="rt-label">'+label+'</p>' +
+      '<div class="rt-actions">' +
+        (t.finished ? '<button class="rt-btn" onclick="dismissRestTimer()">Listo</button>' :
+          '<button class="rt-btn" onclick="addRestTimerSeconds(15)">+15s</button><button class="rt-btn" onclick="dismissRestTimer()">Saltar</button>') +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function saveComment(dayId, exId, value){
+  if (!state.activeUserId) return;
+  var userId = state.activeUserId;
+  if (!state.comments[userId]) state.comments[userId] = {};
+  if (!state.comments[userId][dayId]) state.comments[userId][dayId] = {};
+  state.comments[userId][dayId][exId] = value;
+  persistComments();
+}
+function saveSetWeight(dayId, exId, setIdx, value){
+  if (!state.activeUserId) return;
+  var userId = state.activeUserId;
+  if (!state.weights[userId]) state.weights[userId] = {};
+  if (!state.weights[userId][dayId]) state.weights[userId][dayId] = {};
+  if (!state.weights[userId][dayId][exId] || !Array.isArray(state.weights[userId][dayId][exId])) state.weights[userId][dayId][exId] = [];
+  state.weights[userId][dayId][exId][setIdx] = value;
+  persistWeights();
+}
+function getSeriesCount(ex){
+  var n = parseInt(String(ex.series||'').replace(/[^0-9]/g,''), 10);
+  return (n && n > 0) ? n : 1;
+}
+/* ---------------- photo lightbox ---------------- */
+function openLightbox(src){ state.lightboxPhoto = src; render(); }
+function closeLightbox(){ state.lightboxPhoto = null; render(); }
+
+/* ---------------- chat ---------------- */
+function ensureChat(userId){
+  if (!state.chats[userId]) state.chats[userId] = [];
+  return state.chats[userId];
+}
+function setUserTab(tab){ state.userTab = tab; scrollToTopNext(); render(); }
+function openTrainerChat(userId){ state.chatOpenFor = userId; render(); }
+function closeTrainerChat(){ state.chatOpenFor = null; render(); }
+function sendChatMessage(userId, from){
+  var inputId = from === 'trainer' ? 'trainer-chat-input' : 'user-chat-input';
+  var el = document.getElementById(inputId);
+  if (!el) return;
+  var text = el.value.trim();
+  if (!text) return;
+  var chat = ensureChat(userId);
+  chat.push({ from: from, text: text, ts: Date.now() });
+  el.value = '';
+  persistChats();
+  render();
+}
+function handleChatKey(e, userId, from){
+  if (e.key === 'Enter'){ e.preventDefault(); sendChatMessage(userId, from); }
+}
+function unreadCountForUser(userId){
+  var chat = state.chats[userId] || [];
+  return chat.filter(function(m){ return m.from==='user' && !m.readByTrainer; }).length;
+}
+function markChatReadByTrainer(userId){
+  var chat = state.chats[userId] || [];
+  var changed = false;
+  chat.forEach(function(m){ if (m.from==='user' && !m.readByTrainer){ m.readByTrainer = true; changed = true; } });
+  if (changed) persistChats();
+}
+
+function askResetWeek(){ state.resetConfirm = true; render(); }
+function cancelResetWeek(){ state.resetConfirm = false; render(); }
+function confirmResetWeek(){
+  if (!state.activeUserId) return;
+  state.progress[state.activeUserId] = {};
+  state.resetConfirm = false;
+  persistProgress();
+  render();
+}
+
+/* ---------------- day completion helpers ---------------- */
+function dayCompletion(routine, day){
+  if (!state.activeUserId) return null;
+  var total = day.exercises.length;
+  if (total === 0) return null;
+  var userProg = state.progress[state.activeUserId] || {};
+  var dayProg = userProg[day.id] || {};
+  var done = day.exercises.filter(function(e){ return !!dayProg[e.id]; }).length;
+  return { done: done, total: total, pct: done/total };
+}
+function weekTotals(routine){
+  if (!state.activeUserId) return { done:0, total:0 };
+  var userProg = state.progress[state.activeUserId] || {};
+  var done = 0, total = 0;
+  routine.days.forEach(function(d){
+    total += d.exercises.length;
+    var dayProg = userProg[d.id] || {};
+    done += d.exercises.filter(function(e){ return !!dayProg[e.id]; }).length;
+  });
+  return { done: done, total: total };
+}
+
+/* ---------------- render: recovery screens ---------------- */
+function renderUserRecoveryLookup(){
+  return '' +
+  '<div class="auth-wrap">' +
+    '<img class="auth-logo" src="'+LOGO_SRC+'" />' +
+    '<h2 class="auth-title">Recuperar contraseña</h2>' +
+    '<p class="auth-sub">Escribe tu usuario para ver tu pregunta de seguridad.</p>' +
+    '<div class="auth-form">' +
+      '<input id="recovery-username" class="form-input" placeholder="Usuario" autocapitalize="none" />' +
+      (state.recoveryError ? '<p class="auth-error">'+esc(state.recoveryError)+'</p>' : '') +
+      '<button class="btn-primary" onclick="lookupUserForRecovery()">'+icon('help')+' Continuar</button>' +
+      '<button class="auth-link" onclick="cancelRecovery()">Volver a iniciar sesión</button>' +
+    '</div>' +
+  '</div>';
+}
+function renderUserRecoveryAnswer(){
+  return '' +
+  '<div class="auth-wrap">' +
+    '<img class="auth-logo" src="'+LOGO_SRC+'" />' +
+    '<h2 class="auth-title">Responde para continuar</h2>' +
+    '<div class="recovery-question">'+esc(state.recoveryQuestion)+'</div>' +
+    '<div class="auth-form">' +
+      '<input id="recovery-answer" class="form-input" placeholder="Tu respuesta" />' +
+      '<input id="recovery-newpw1" type="password" class="form-input" placeholder="Nueva contraseña" />' +
+      '<input id="recovery-newpw2" type="password" class="form-input" placeholder="Repite la contraseña" />' +
+      (state.recoveryError ? '<p class="auth-error">'+esc(state.recoveryError)+'</p>' : '') +
+      '<button class="btn-primary" onclick="submitUserRecovery()">'+icon('check')+' Restablecer contraseña</button>' +
+      '<button class="auth-link" onclick="cancelRecovery()">Cancelar</button>' +
+    '</div>' +
+  '</div>';
+}
+function renderTrainerRecoveryLookup(){
+  return '' +
+  '<div class="auth-wrap">' +
+    '<img class="auth-logo" src="'+LOGO_SRC+'" />' +
+    '<h2 class="auth-title">Recuperar contraseña</h2>' +
+    '<p class="auth-sub">Escribe tu usuario de entrenador.</p>' +
+    '<div class="auth-form">' +
+      '<input id="trainer-recovery-username" class="form-input" placeholder="Usuario" autocapitalize="none" />' +
+      (state.recoveryError ? '<p class="auth-error">'+esc(state.recoveryError)+'</p>' : '') +
+      '<button class="btn-primary" onclick="lookupTrainerForRecovery()">'+icon('help')+' Continuar</button>' +
+      '<button class="auth-link" onclick="cancelRecovery()">Volver a iniciar sesión</button>' +
+    '</div>' +
+  '</div>';
+}
+function renderTrainerRecoveryAnswer(){
+  return '' +
+  '<div class="auth-wrap">' +
+    '<img class="auth-logo" src="'+LOGO_SRC+'" />' +
+    '<h2 class="auth-title">Responde para continuar</h2>' +
+    '<div class="recovery-question">'+esc(state.recoveryQuestion)+'</div>' +
+    '<div class="auth-form">' +
+      '<input id="trainer-recovery-answer" class="form-input" placeholder="Tu respuesta" />' +
+      '<input id="trainer-recovery-newpw1" type="password" class="form-input" placeholder="Nueva contraseña" />' +
+      '<input id="trainer-recovery-newpw2" type="password" class="form-input" placeholder="Repite la contraseña" />' +
+      (state.recoveryError ? '<p class="auth-error">'+esc(state.recoveryError)+'</p>' : '') +
+      '<button class="btn-primary" onclick="submitTrainerRecovery()">'+icon('check')+' Restablecer contraseña</button>' +
+      '<button class="auth-link" onclick="cancelRecovery()">Cancelar</button>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ---------------- render: import code screen (student side) ---------------- */
+function renderImportCodeScreen(){
+  return '' +
+  '<div class="auth-wrap">' +
+    '<img class="auth-logo" src="'+LOGO_SRC+'" />' +
+    '<h2 class="auth-title">Código de tu entrenador</h2>' +
+    '<p class="auth-sub">Pega aquí el código que te envió tu entrenador por WhatsApp. Solo tienes que hacerlo una vez en este celular.</p>' +
+    '<div class="auth-form">' +
+      '<textarea id="import-code-text" class="form-input comment-input" style="min-height:90px;font-size:11px;" placeholder="Pega el código aquí"></textarea>' +
+      (state.importError ? '<p class="auth-error">'+esc(state.importError)+'</p>' : '') +
+      '<button class="btn-primary" onclick="importStudentCode()">'+icon('check')+' Importar y entrar</button>' +
+      '<button class="auth-link" onclick="cancelImportMode()">Volver</button>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ---------------- render: auth screens ---------------- */
+function renderTrainerSetup(){
+  var options = SECURITY_QUESTIONS.map(function(q){ return '<option value="'+esc(q)+'">'+esc(q)+'</option>'; }).join('');
+  return '' +
+  '<div class="auth-wrap">' +
+    '<img class="auth-logo" src="'+LOGO_SRC+'" />' +
+    '<h2 class="auth-title">Crea tu cuenta de entrenador</h2>' +
+    '<p class="auth-sub">Primera vez aquí — define tu usuario, contraseña y una pregunta de seguridad.</p>' +
+    '<div class="auth-form">' +
+      '<input id="setup-username" class="form-input" placeholder="Usuario" autocapitalize="none" />' +
+      '<input id="setup-password" type="password" class="form-input" placeholder="Contraseña" />' +
+      '<input id="setup-password2" type="password" class="form-input" placeholder="Repite la contraseña" />' +
+      '<select id="setup-question" class="form-select">'+options+'</select>' +
+      '<input id="setup-answer" class="form-input" placeholder="Tu respuesta secreta" />' +
+      (state.trainerSetupError ? '<p class="auth-error">'+esc(state.trainerSetupError)+'</p>' : '') +
+      '<button class="btn-primary" onclick="submitTrainerSetup()">'+icon('lock')+' Crear cuenta</button>' +
+    '</div>' +
+  '</div>';
+}
+function renderTrainerLogin(){
+  return '' +
+  '<div class="auth-wrap">' +
+    '<img class="auth-logo" src="'+LOGO_SRC+'" />' +
+    '<h2 class="auth-title">Acceso entrenador</h2>' +
+    '<div class="auth-form">' +
+      '<input id="trainer-login-username" class="form-input" placeholder="Usuario" autocapitalize="none" />' +
+      '<input id="trainer-login-password" type="password" class="form-input" placeholder="Contraseña" />' +
+      (state.trainerLoginError ? '<p class="auth-error">'+esc(state.trainerLoginError)+'</p>' : '') +
+      (state.recoveryFlashMsg ? '<p class="auth-success">'+esc(state.recoveryFlashMsg)+'</p>' : '') +
+      '<button class="btn-primary" onclick="attemptTrainerLogin()">'+icon('lock')+' Iniciar sesión</button>' +
+      '<button class="auth-link" onclick="startTrainerRecovery()">¿Olvidaste tu contraseña?</button>' +
+    '</div>' +
+  '</div>';
+}
+function renderUserLogin(){
+  return '' +
+  '<div class="auth-wrap">' +
+    '<img class="auth-logo" src="'+LOGO_SRC+'" />' +
+    '<h2 class="auth-title">Inicia sesión</h2>' +
+    '<p class="auth-sub">Usa el usuario y contraseña que te dio tu entrenador.</p>' +
+    '<div class="auth-form">' +
+      '<input id="login-username" class="form-input" placeholder="Usuario" autocapitalize="none" onkeydown="handleLoginKey(event)" />' +
+      '<input id="login-password" type="password" class="form-input" placeholder="Contraseña" onkeydown="handleLoginKey(event)" />' +
+      (state.userLoginError ? '<p class="auth-error">'+esc(state.userLoginError)+'</p>' : '') +
+      (state.recoveryFlashMsg ? '<p class="auth-success">'+esc(state.recoveryFlashMsg)+'</p>' : '') +
+      '<button class="btn-primary" onclick="attemptUserLogin()">'+icon('lock')+' Iniciar sesión</button>' +
+      '<button class="auth-link" onclick="startUserRecovery()">¿Olvidaste tu contraseña?</button>' +
+      '<button class="auth-link" onclick="toggleImportMode()">¿Tienes un código de tu entrenador?</button>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ---------------- render: shared pieces ---------------- */
+function renderPhotoPreview(){
+  if (state.pendingPhoto){
+    return '<div class="photo-thumb-wrap" id="photo-preview">' +
+      '<img class="photo-thumb" src="'+state.pendingPhoto+'" />' +
+      '<button class="photo-remove" onclick="removePendingPhoto()">'+icon('x')+'</button>' +
+    '</div>';
+  }
+  return '<label class="photo-upload-label" id="photo-preview">' +
+    icon('camera') + ' Subir foto' +
+    '<input type="file" accept="image/*" onchange="handlePhotoInput(this)" />' +
+  '</label>';
+}
+
+function renderExerciseForm(){
+  var editing = !!state.editingExercise;
+  var current = { name:'', series:'', reps:'', descanso:'', notas:'' };
+  if (editing){
+    var routine = ensureRoutine(state.trainerEditingUserId);
+    var day = routine.days.find(function(d){ return d.id===state.editingExercise.dayId; });
+    var ex = day.exercises.find(function(e){ return e.id===state.editingExercise.exId; });
+    current = ex;
+  }
+  var currentSeconds = parseDescansoToSeconds(current.descanso);
+  var isPreset = DESCANSO_PRESETS.indexOf(currentSeconds) !== -1;
+  var descansoOptions = '<option value="">Sin descanso</option>';
+  DESCANSO_PRESETS.forEach(function(s){
+    descansoOptions += '<option value="'+s+'"'+(isPreset && currentSeconds===s ? ' selected':'')+'>'+formatSecondsLabel(s)+'</option>';
+  });
+  descansoOptions += '<option value="custom"'+(!isPreset && currentSeconds>0 ? ' selected':'')+'>Personalizado…</option>';
+
+  var datalistOptions = EXERCISE_LIBRARY.map(function(n){ return '<option value="'+esc(n)+'"></option>'; }).join('');
+
+  return '' +
+  '<div class="form-card">' +
+    '<input id="draft-name" class="form-input" list="exercise-name-list" autocomplete="off" placeholder="Nombre del ejercicio (empieza a escribir)" value="'+esc(current.name)+'" />' +
+    '<datalist id="exercise-name-list">'+datalistOptions+'</datalist>' +
+    '<div class="form-grid3">' +
+      '<input id="draft-series" class="form-input mono-input" placeholder="Series" value="'+esc(current.series)+'" />' +
+      '<input id="draft-reps" class="form-input mono-input" placeholder="Reps" value="'+esc(current.reps)+'" />' +
+      '<select id="draft-descanso" class="form-input mono-input" onchange="onDescansoPresetChange(this)">'+descansoOptions+'</select>' +
+    '</div>' +
+    '<input id="draft-descanso-custom" type="number" min="1" inputmode="numeric" class="form-input mono-input" placeholder="Descanso personalizado en segundos" value="'+(!isPreset && currentSeconds>0 ? currentSeconds : '')+'" style="display:'+(!isPreset && currentSeconds>0 ? 'block':'none')+';" />' +
+    '<input id="draft-notas" class="form-input" placeholder="Notas (opcional)" value="'+esc(current.notas)+'" />' +
+    '<div class="photo-row">' + renderPhotoPreview() + '</div>' +
+    '<div class="form-actions">' +
+      '<button class="btn-primary" onclick="saveExercise()">'+icon('check')+' Guardar</button>' +
+      '<button class="btn-ghost" onclick="cancelExerciseForm()">'+icon('x')+'</button>' +
+    '</div>' +
+  '</div>';
+}
+function onDescansoPresetChange(sel){
+  var customInput = document.getElementById('draft-descanso-custom');
+  if (!customInput) return;
+  customInput.style.display = (sel.value === 'custom') ? 'block' : 'none';
+  if (sel.value === 'custom') customInput.focus();
+}
+
+function renderExerciseRow(day, ex){
+  var thumb = ex.photo ? '<img class="ex-thumb" src="'+ex.photo+'" onclick="event.stopPropagation();openLightbox(\''+ex.photo+'\')" />' : '';
+  var descansoLabel = formatSecondsLabel(parseDescansoToSeconds(ex.descanso));
+  var meta = esc(ex.series) + ' x ' + esc(ex.reps) + (descansoLabel ? ' · descanso ' + descansoLabel : '');
+  var notes = ex.notas ? '<p class="ex-notes">'+esc(ex.notas)+'</p>' : '';
+  var userComments = state.comments[state.trainerEditingUserId] || {};
+  var dayComments = userComments[day.id] || {};
+  var comment = dayComments[ex.id];
+  var userWeights = state.weights[state.trainerEditingUserId] || {};
+  var dayWeights = userWeights[day.id] || {};
+  var weightsArr = Array.isArray(dayWeights[ex.id]) ? dayWeights[ex.id] : [];
+  var weightParts = [];
+  weightsArr.forEach(function(w, i){ if (w) weightParts.push('S'+(i+1)+': '+esc(w)+'kg'); });
+  var logParts = [];
+  if (weightParts.length) logParts.push(weightParts.join(' · '));
+  if (comment) logParts.push(esc(comment));
+  var commentHtml = logParts.length ? '<div class="ex-comment">'+icon('comment')+'<span>'+logParts.join(' · ')+'</span></div>' : '';
+  return '' +
+  '<div class="ex-row">' +
+    '<div class="ex-left">' + thumb +
+      '<div><p class="ex-name">'+esc(ex.name)+'</p><p class="ex-meta">'+meta+'</p>'+notes+commentHtml+'</div>' +
+    '</div>' +
+    '<div class="ex-actions">' +
+      '<button class="icon-btn" onclick="startEditExercise(\''+day.id+'\',\''+ex.id+'\')">'+icon('pencil')+'</button>' +
+      '<button class="icon-btn danger" onclick="deleteExercise(\''+day.id+'\',\''+ex.id+'\')">'+icon('trash')+'</button>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ---------------- render: trainer — routine editor for one user ---------------- */
+function renderTrainerEditorTabs(){
+  var tabs = [ ['rutina','Rutina'], ['pauta','Pauta Alimenticia'], ['chat','Chat'] ];
+  var html = '<div class="editor-tabs">';
+  tabs.forEach(function(t){
+    var unread = t[0]==='chat' ? unreadCountForUser(state.trainerEditingUserId) : 0;
+    html += '<button class="editor-tab'+(state.trainerEditorTab===t[0]?' active':'')+'" onclick="setTrainerEditorTab(\''+t[0]+'\')">'+t[1]+
+      (unread ? '<span class="chat-badge">'+unread+'</span>' : '') +
+    '</button>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderTrainerRoutineTab(routine){
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;">' +
+      '<span class="section-label">En verde: peso y comentarios que va llenando el cliente</span>' +
+      '<span class="flash" style="opacity:'+(state.savedFlash?1:0)+'">Guardado</span>' +
+    '</div>';
+  if (state.saveError){
+    html += '<div class="save-error-banner">'+icon('x')+'<span>'+esc(state.saveError)+'</span></div>';
+  }
+
+  routine.days.forEach(function(day){
+    var isOpen = state.openDayId === day.id;
+    html += '<div class="day-card">' +
+      '<button class="day-head" onclick="toggleDay(\''+day.id+'\')">' +
+        '<div class="day-title"><span class="day-name">'+esc(day.name)+'</span>' +
+        '<span class="day-badge">'+day.exercises.length+' '+(day.exercises.length===1?'ejercicio':'ejercicios')+'</span></div>' +
+        icon(isOpen ? 'chevronDown':'chevronRight') +
+      '</button>';
+    if (isOpen){
+      html += '<div class="day-body">';
+      if (day.exercises.length===0 && state.addingToDay!==day.id){
+        html += '<p class="empty-italic">Sin ejercicios todavía.</p>';
+      }
+      day.exercises.forEach(function(ex){
+        if (state.editingExercise && state.editingExercise.dayId===day.id && state.editingExercise.exId===ex.id){
+          html += renderExerciseForm();
+        } else {
+          html += renderExerciseRow(day, ex);
+        }
+      });
+      if (state.addingToDay === day.id){
+        html += renderExerciseForm();
+      } else {
+        html += '<button class="btn-add" onclick="startAddExercise(\''+day.id+'\')">'+icon('plus')+' Añadir ejercicio</button>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+  return html;
+}
+
+function renderTrainerPautaTab(routine){
+  var html = '<div class="section-label" style="padding:0 4px;">Pauta Alimenticia del cliente</div>';
+  if (routine.dietPdf){
+    html += '<div class="pdf-name-row"><span class="ex-meta">'+icon('file')+' '+esc(routine.dietPdfName||'pauta.pdf')+'</span>' +
+      '<button class="icon-btn danger" onclick="removeDietPdf()">'+icon('trash')+'</button></div>' +
+      '<iframe class="pdf-frame" src="'+routine.dietPdf+'"></iframe>';
+  } else {
+    html += '<div class="empty-box"><p>Todavía no subes una pauta alimenticia para este cliente.</p></div>';
+  }
+  html += '<label class="photo-upload-label" style="width:100%;justify-content:center;margin-top:10px;">'+icon('plus')+' '+(routine.dietPdf?'Reemplazar PDF':'Subir PDF')+
+    '<input type="file" accept="application/pdf" onchange="handlePdfInput(this)" /></label>';
+  return html;
+}
+
+function renderTrainerChatTab(userId){
+  markChatReadByTrainer(userId);
+  var chat = state.chats[userId] || [];
+  var html = '<div class="chat-wrap">';
+  html += '<div class="chat-messages" id="trainer-chat-messages">';
+  if (chat.length===0){
+    html += '<p class="empty-italic" style="padding:10px 4px;">Todavía no hay mensajes con este cliente.</p>';
+  } else {
+    chat.forEach(function(m){
+      html += '<div class="chat-bubble '+(m.from==='trainer'?'mine':'theirs')+'">'+esc(m.text)+'</div>';
+    });
+  }
+  html += '</div>';
+  html += '<div class="chat-input-row">' +
+    '<input id="trainer-chat-input" class="form-input" placeholder="Escribe un mensaje…" onkeydown="handleChatKey(event,\''+userId+'\',\'trainer\')" />' +
+    '<button class="icon-btn accent" onclick="sendChatMessage(\''+userId+'\',\'trainer\')">'+icon('send')+'</button>' +
+  '</div></div>';
+  return html;
+}
+
+function renderTrainerRoutineEditor(){
+  var user = state.users.find(function(u){ return u.id===state.trainerEditingUserId; });
+  var routine = ensureRoutine(state.trainerEditingUserId);
+
+  var html = '<div class="section">' +
+    '<div class="editor-head">' +
+      '<button class="back-btn" onclick="closeUserRoutine()">'+icon('chevronLeft')+'</button>' +
+      '<p class="editor-title">'+esc(user ? user.name : '')+'</p>' +
+    '</div>' +
+    renderTrainerEditorTabs();
+
+  if (state.trainerEditorTab === 'pauta') html += renderTrainerPautaTab(routine);
+  else if (state.trainerEditorTab === 'chat') html += renderTrainerChatTab(state.trainerEditingUserId);
+  else html += renderTrainerRoutineTab(routine);
+
+  html += '</div>';
+  return html;
+}
+
+/* ---------------- render: trainer — users roster ---------------- */
+function renderResetPasswordForm(userId){
+  return '' +
+  '<div class="form-card" style="margin-top:6px;">' +
+    '<input id="reset-pw1" type="password" class="form-input" placeholder="Nueva contraseña" />' +
+    '<input id="reset-pw2" type="password" class="form-input" placeholder="Repite la contraseña" />' +
+    (state.pwChangeError ? '<p class="auth-error">'+esc(state.pwChangeError)+'</p>' : '') +
+    '<div class="form-actions">' +
+      '<button class="btn-primary" onclick="confirmResetPassword(\''+userId+'\')">'+icon('check')+' Guardar</button>' +
+      '<button class="btn-ghost" onclick="cancelResetPassword()">'+icon('x')+'</button>' +
+    '</div>' +
+  '</div>';
+}
+function renderShareBox(userId){
+  var user = state.users.find(function(u){ return u.id===userId; });
+  var code = buildUserExportCode(userId);
+  return '' +
+  '<div class="form-card" style="margin-top:6px;">' +
+    '<p class="auth-sub" style="margin:0;text-align:left;">Solo necesario si '+esc(user?user.name:'')+' NO va a usar este mismo enlace en vivo. Genera un código con su acceso y rutina para pegar una vez en su celular.</p>' +
+    '<textarea id="share-code-text" class="form-input comment-input" style="min-height:70px;font-size:10px;" readonly>'+esc(code)+'</textarea>' +
+    '<div class="form-actions">' +
+      '<button class="btn-primary" onclick="copyShareCode()">'+icon('share')+' Copiar código</button>' +
+      '<button class="btn-ghost" onclick="cancelShareUser()">'+icon('x')+'</button>' +
+    '</div>' +
+    (state.shareCopiedFlash ? '<p class="auth-success" style="margin:0;">¡Copiado! Ya puedes pegarlo en WhatsApp.</p>' : '') +
+  '</div>';
+}
+
+function renderUserRosterList(){
+  if (state.users.length === 0){
+    return '<div class="empty-box"><p>Aún no hay usuarios. Agrega el primero arriba.</p></div>';
+  }
+  var html = '<div class="user-list">';
+  state.users.forEach(function(u){
+    var n = countExercises(state.routines[u.id]);
+    var sub = (n > 0 ? (n + (n===1?' ejercicio · ':' ejercicios · ')) : 'Sin rutina · ') + '@' + u.username;
+    html += '<div>' +
+      '<div class="user-item">' +
+        '<div class="user-item-left"><div class="user-avatar">'+esc(u.name.trim().charAt(0).toUpperCase())+'</div>' +
+        '<div style="min-width:0;"><span class="user-name">'+esc(u.name)+'</span><p class="user-sub">'+esc(sub)+'</p></div></div>' +
+        '<div class="ex-actions">' +
+          '<button class="icon-btn accent" onclick="openUserRoutine(\''+u.id+'\')" title="Editar rutina">'+icon('dumbbell')+'</button>' +
+          '<button class="icon-btn" onclick="startShareUser(\''+u.id+'\')" title="Compartir código (uso sin enlace en vivo)">'+icon('share')+'</button>' +
+          '<button class="icon-btn" onclick="startResetPassword(\''+u.id+'\')" title="Restablecer contraseña">'+icon('key')+'</button>' +
+          '<button class="icon-btn danger" onclick="deleteUser(\''+u.id+'\')" title="Eliminar">'+icon('trash')+'</button>' +
+        '</div>' +
+      '</div>' +
+      (state.resettingUserId === u.id ? renderResetPasswordForm(u.id) : '') +
+      (state.sharingUserId === u.id ? renderShareBox(u.id) : '') +
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderTrainerUsers(){
+  var full = state.users.length >= MAX_USERS;
+  var options = SECURITY_QUESTIONS.map(function(q){ return '<option value="'+esc(q)+'">'+esc(q)+'</option>'; }).join('');
+  var html = '<div class="trainer-topbar">' +
+    '<span class="section-label" style="padding:0">Sesión: '+esc(state.trainerAuth.username)+'</span>' +
+    '<div class="topbar-actions">' +
+      '<button class="switch-btn" onclick="toggleTrainerPasswordForm()">'+icon('key')+' Contraseña</button>' +
+      '<button class="switch-btn" onclick="trainerLogout()">'+icon('logout')+' Salir</button>' +
+    '</div>' +
+  '</div>';
+
+  if (state.trainerChangingPassword){
+    html += '<div class="section" style="padding-bottom:0;">' +
+      '<div class="form-card">' +
+        '<input id="trainer-newpw1" type="password" class="form-input" placeholder="Nueva contraseña" />' +
+        '<input id="trainer-newpw2" type="password" class="form-input" placeholder="Repite la contraseña" />' +
+        (state.pwChangeError ? '<p class="auth-error">'+esc(state.pwChangeError)+'</p>' : '') +
+        '<div class="form-actions">' +
+          '<button class="btn-primary" onclick="submitTrainerPasswordReset()">'+icon('check')+' Guardar</button>' +
+          '<button class="btn-ghost" onclick="cancelTrainerPasswordForm()">'+icon('x')+'</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  html += '<div class="section">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;">' +
+      '<span class="section-label" style="padding:0">Cupos: '+state.users.length+' / '+MAX_USERS+'</span>' +
+      '<span class="flash" style="opacity:'+(state.pwResetFlash?1:0)+'">Contraseña actualizada</span>' +
+    '</div>' +
+    '<div class="add-user-row">' +
+      '<input id="new-user-name" class="form-input" placeholder="'+(full?'Cupo lleno':'Nombre')+'" '+(full?'disabled':'')+' onkeydown="handleUserKey(event)" />' +
+      '<input id="new-user-username" class="form-input" placeholder="Usuario" '+(full?'disabled':'')+' autocapitalize="none" onkeydown="handleUserKey(event)" />' +
+      '<input id="new-user-password" type="password" class="form-input" placeholder="Contraseña" '+(full?'disabled':'')+' onkeydown="handleUserKey(event)" />' +
+      '<select id="new-user-question" class="form-select" '+(full?'disabled':'')+'>'+options+'</select>' +
+      '<input id="new-user-answer" class="form-input" placeholder="Respuesta secreta (para recuperar clave)" '+(full?'disabled':'')+' onkeydown="handleUserKey(event)" />' +
+      (state.userFormError ? '<p class="auth-error">'+esc(state.userFormError)+'</p>' : '') +
+      '<button class="btn-square" onclick="addUser()" '+(full?'disabled':'')+'>'+icon('plus')+' Crear usuario</button>' +
+    '</div>' +
+    (usingRealStorage ?
+      '<p class="auth-sub" style="text-align:left;margin:0;padding:0 4px;">Si tu alumno abre este mismo enlace, lo ve y usa en vivo automáticamente — no necesita código.</p>' :
+      '<p class="auth-sub" style="text-align:left;margin:0;padding:0 4px;">Toca '+icon('share')+' junto a cada alumno para enviarle su acceso y rutina por WhatsApp.</p>'
+    ) +
+    renderUserRosterList() +
+  '</div>';
+  return html;
+}
+
+/* ---------------- render: user — personal weekly checklist ---------------- */
+function renderUserTabs(){
+  var tabs = [ ['rutina','Rutina'], ['pauta','Pauta Alimenticia'], ['chat','Chat'] ];
+  var html = '<div class="editor-tabs">';
+  tabs.forEach(function(t){
+    var unread = t[0]==='chat' ? (state.chats[state.activeUserId]||[]).filter(function(m){ return m.from==='trainer' && !m.readByUser; }).length : 0;
+    html += '<button class="editor-tab'+(state.userTab===t[0]?' active':'')+'" onclick="setUserTab(\''+t[0]+'\')">'+t[1]+
+      (unread ? '<span class="chat-badge">'+unread+'</span>' : '') +
+    '</button>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderUserRutinaTab(routine){
+  var day = routine.days[state.activeUserDayIndex];
+  var comp = dayCompletion(routine, day);
+  var totals = weekTotals(routine);
+
+  var html = '<div class="week-card"><div class="week-head"><span class="section-label" style="padding:0">Progreso de la semana</span>' +
+    '<span class="ex-meta" style="color:var(--lime)">'+totals.done+'/'+totals.total+'</span></div>' +
+    '<div class="week-days">';
+  routine.days.forEach(function(d,i){
+    var c = dayCompletion(routine, d);
+    var filled = c ? c.pct === 1 : false;
+    var partial = c ? (c.pct > 0 && c.pct < 1) : false;
+    var cls = 'day-dot' + (i===state.activeUserDayIndex?' active-border':'') + (filled?' filled':'') + (partial?' partial':'');
+    html += '<button class="'+cls+'" onclick="setActiveUserDay('+i+')">'+DAY_LETTERS[i]+'</button>';
+  });
+  html += '</div></div>';
+
+  html += '<div><div class="day-title-row"><h2 class="day-title-big">'+esc(day.name)+'</h2>';
+  if (comp) html += '<span class="ex-meta">'+comp.done+'/'+comp.total+' hecho</span>';
+  html += '</div>';
+
+  if (day.exercises.length === 0){
+    html += '<div class="empty-box"><p>Tu entrenador todavía no configuró ejercicios para este día.</p></div>';
+  } else {
+    html += '<div class="checklist">';
+    var userProg = state.progress[state.activeUserId] || {};
+    var dayProg = userProg[day.id] || {};
+    var userComments = state.comments[state.activeUserId] || {};
+    var dayComments = userComments[day.id] || {};
+    var userWeights = state.weights[state.activeUserId] || {};
+    var dayWeights = userWeights[day.id] || {};
+    var userSetsDone = state.setsDone[state.activeUserId] || {};
+    var daySetsDone = userSetsDone[day.id] || {};
+    day.exercises.forEach(function(ex){
+      var checked = !!dayProg[ex.id];
+      var thumb = ex.photo ? '<img class="ex-thumb" src="'+ex.photo+'" onclick="event.stopPropagation();openLightbox(\''+ex.photo+'\')" />' : '';
+      var descansoLabel = formatSecondsLabel(parseDescansoToSeconds(ex.descanso));
+      var meta = esc(ex.series)+' x '+esc(ex.reps)+(descansoLabel?' · descanso '+descansoLabel:'');
+      var notes = ex.notas ? '<p class="ex-notes">'+esc(ex.notas)+'</p>' : '';
+      var existingComment = dayComments[ex.id] || '';
+      var existingWeights = Array.isArray(dayWeights[ex.id]) ? dayWeights[ex.id] : [];
+      var existingSetsDone = Array.isArray(daySetsDone[ex.id]) ? daySetsDone[ex.id] : [];
+      var seriesCount = getSeriesCount(ex);
+      var setsHtml = '';
+      for (var si=0; si<seriesCount; si++){
+        var sv = existingWeights[si] || '';
+        var setDone = !!existingSetsDone[si];
+        setsHtml += '<div class="weight-row'+(setDone?' set-done':'')+'">' +
+          '<button class="set-check-btn'+(setDone?' on':'')+'" onclick="toggleSetDone(\''+day.id+'\',\''+ex.id+'\', '+si+')">'+(setDone?icon('check'):'')+'</button>' +
+          '<label class="weight-label">Serie '+(si+1)+'</label>' +
+          '<input class="weight-input" type="text" inputmode="decimal" placeholder="0" value="'+esc(sv)+'" onblur="saveSetWeight(\''+day.id+'\',\''+ex.id+'\', '+si+', this.value)" />' +
+          '<span class="weight-unit">kg</span>' +
+        '</div>';
+      }
+      var timerHere = (state.restTimer && state.restTimer.dayId===day.id && state.restTimer.exId===ex.id) ? renderRestTimerBar() : '';
+      html += '<div class="check-item'+(checked?' done':'')+'">' +
+        '<button class="check-toggle" onclick="toggleCheck(\''+day.id+'\',\''+ex.id+'\')">' +
+          '<div class="check-circle'+(checked?' on':'')+'">'+(checked?icon('check'):'')+'</div>' +
+          thumb +
+          '<div class="check-text"><p class="ex-name'+(checked?' done':'')+'">'+esc(ex.name)+'</p><p class="ex-meta">'+meta+'</p>'+notes+'</div>' +
+        '</button>' +
+        '<div class="extra-row">' +
+          setsHtml +
+          timerHere +
+          (checked ? '<textarea placeholder="Comentario (opcional): ¿cómo te fue? Tu entrenador lo verá" onblur="saveComment(\''+day.id+'\',\''+ex.id+'\', this.value)" class="comment-input">'+esc(existingComment)+'</textarea>' : '') +
+        '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+
+  html += '<div class="reset-row">';
+  if (state.resetConfirm){
+    html += '<div class="confirm-row"><button class="btn-confirm" onclick="confirmResetWeek()">Confirmar reinicio</button>' +
+      '<button class="btn-cancel" onclick="cancelResetWeek()">Cancelar</button></div>';
+  } else {
+    html += '<button class="btn-reset" onclick="askResetWeek()">'+icon('reset')+' Reiniciar semana</button>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderUserPautaTab(routine){
+  var html = '';
+  if (routine.dietPdf){
+    html += '<div class="pdf-name-row"><span class="ex-meta">'+icon('file')+' '+esc(routine.dietPdfName||'pauta.pdf')+'</span></div>' +
+      '<iframe class="pdf-frame" src="'+routine.dietPdf+'"></iframe>';
+  } else {
+    html += '<div class="empty-box"><p>Tu entrenador todavía no subió tu pauta alimenticia.</p></div>';
+  }
+  return html;
+}
+
+function renderUserChatTab(userId){
+  var chat = state.chats[userId] || [];
+  var changed = false;
+  chat.forEach(function(m){ if (m.from==='trainer' && !m.readByUser){ m.readByUser = true; changed = true; } });
+  if (changed) persistChats();
+  var html = '<div class="chat-wrap">';
+  html += '<div class="chat-messages" id="user-chat-messages">';
+  if (chat.length===0){
+    html += '<p class="empty-italic" style="padding:10px 4px;">Escríbele a tu entrenador cuando quieras.</p>';
+  } else {
+    chat.forEach(function(m){
+      html += '<div class="chat-bubble '+(m.from==='user'?'mine':'theirs')+'">'+esc(m.text)+'</div>';
+    });
+  }
+  html += '</div>';
+  html += '<div class="chat-input-row">' +
+    '<input id="user-chat-input" class="form-input" placeholder="Escribe un mensaje…" onkeydown="handleChatKey(event,\''+userId+'\',\'user\')" />' +
+    '<button class="icon-btn accent" onclick="sendChatMessage(\''+userId+'\',\'user\')">'+icon('send')+'</button>' +
+  '</div></div>';
+  return html;
+}
+
+function renderUserView(){
+  var routine = state.routines[state.activeUserId] || emptyRoutine();
+  var activeUser = state.users.find(function(u){ return u.id===state.activeUserId; });
+
+  var html = '<div class="hello-row">' +
+    '<p class="hello-text">Sesión de <span class="hello-name">'+esc(activeUser?activeUser.name:'')+'</span></p>' +
+    '<button class="switch-btn" onclick="backToPicker()">'+icon('swap')+' Cerrar sesión</button>' +
+  '</div>';
+
+  html += '<div class="section">';
+  html += renderUserTabs();
+  if (state.userTab === 'pauta') html += renderUserPautaTab(routine);
+  else if (state.userTab === 'chat') html += renderUserChatTab(state.activeUserId);
+  else html += renderUserRutinaTab(routine);
+  html += '</div>';
+  return html;
+}
+
+/* ---------------- render: root ---------------- */
+function render(){
+  var root = document.getElementById('root');
+  var prevContentEl = root.querySelector('.content');
+  var savedScrollTop = (prevContentEl && !pendingScrollReset) ? prevContentEl.scrollTop : 0;
+  pendingScrollReset = false;
+  if (state.loading){
+    root.innerHTML = '<div class="loading-screen">Cargando…</div>';
+    return;
+  }
+
+  var toggleSlideClass = state.mode === 'entrenador' ? 'entrenador' : 'usuario';
+  var storageTag;
+  if (usingRealStorage) storageTag = '<span class="quota-tag live"><span class="live-dot"></span>en línea</span>';
+  else if (usingLocalStorage) storageTag = '<span class="quota-tag">guardado en este celular</span>';
+  else storageTag = '<span class="quota-tag">sin guardar</span>';
+
+  var header = '' +
+  '<div class="header">' +
+    '<div class="brand-row">' +
+      '<div class="brand"><img src="'+LOGO_SRC+'" /><h1>Seba<br/>Trainer</h1></div>' +
+      '<div class="header-right">' +
+        '<a class="ig-link" href="https://www.instagram.com/seba_trainer_?igsh=MXBiODIzdG0xNG5lZw==" target="_blank" rel="noopener">'+icon('instagram')+'</a>' +
+        storageTag +
+      '</div>' +
+    '</div>' +
+    '<div class="toggle">' +
+      '<div class="toggle-slide '+toggleSlideClass+'"></div>' +
+      '<button class="toggle-btn'+(state.mode==='entrenador'?' active':'')+'" onclick="setMode(\'entrenador\')">'+icon('dumbbell')+' Entrenador</button>' +
+      '<button class="toggle-btn'+(state.mode==='usuario'?' active':'')+'" onclick="setMode(\'usuario\')">'+icon('user')+' Usuario</button>' +
+    '</div>' +
+  '</div>';
+
+  var content = '';
+  if (state.mode === 'entrenador'){
+    if (!state.trainerAuth){
+      content += renderTrainerSetup();
+    } else if (!state.trainerLoggedIn){
+      if (state.recoveryMode === 'trainer-lookup') content += renderTrainerRecoveryLookup();
+      else if (state.recoveryMode === 'trainer-answer') content += renderTrainerRecoveryAnswer();
+      else content += renderTrainerLogin();
+    } else {
+      content += state.trainerEditingUserId ? renderTrainerRoutineEditor() : renderTrainerUsers();
+    }
+  } else {
+    if (state.activeUserId){
+      content += renderUserView();
+    } else if (state.importMode){
+      content += renderImportCodeScreen();
+    } else if (state.recoveryMode === 'user-lookup'){
+      content += renderUserRecoveryLookup();
+    } else if (state.recoveryMode === 'user-answer'){
+      content += renderUserRecoveryAnswer();
+    } else {
+      content += renderUserLogin();
+    }
+  }
+
+  var lightboxHtml = state.lightboxPhoto ? (
+    '<div class="lightbox-overlay" onclick="closeLightbox()">' +
+      '<button class="lightbox-close" onclick="closeLightbox()">'+icon('x')+'</button>' +
+      '<img src="'+state.lightboxPhoto+'" onclick="event.stopPropagation()" />' +
+    '</div>'
+  ) : '';
+
+  root.innerHTML = '<div class="wrap"><div class="phone">' +
+    '<div class="notch-row"><div class="notch"></div></div>' +
+    header +
+    '<div class="content">' + content + '</div>' +
+  '</div></div>' + lightboxHtml;
+
+  var newContentEl = root.querySelector('.content');
+  if (newContentEl && savedScrollTop) newContentEl.scrollTop = savedScrollTop;
+}
+
+/* ---------------- init ---------------- */
+async function init(){
+  var u = [], p = {}, c = {}, w = {}, ch = {}, sd = {}, lastUser = null, tAuth = null, tSession = false;
+  try { var uu = await storageGet('users-v1', true); if (uu) u = JSON.parse(uu); } catch(e){}
+  try { var pp = await storageGet('progress-v2', true); if (pp) p = JSON.parse(pp); } catch(e){}
+  try { var cc = await storageGet('comments-v1', true); if (cc) c = JSON.parse(cc); } catch(e){}
+  try { var ww = await storageGet('weights-v1', true); if (ww) w = JSON.parse(ww); } catch(e){}
+  try { var chch2 = await storageGet('chats-v1', true); if (chch2) ch = JSON.parse(chch2); } catch(e){}
+  try { var sdsd = await storageGet('setsdone-v1', true); if (sdsd) sd = JSON.parse(sdsd); } catch(e){}
+  try { var lu = await storageGet('active-user-v1', false); if (lu) lastUser = JSON.parse(lu); } catch(e){}
+  try { var ta = await storageGet('trainer-auth-v1', false); if (ta) tAuth = JSON.parse(ta); } catch(e){}
+  try { var ts = await storageGet('trainer-session-v1', false); if (ts) tSession = JSON.parse(ts); } catch(e){}
+
+  /* Migración: las rutinas se guardaban todas juntas en un solo lugar
+     (versión anterior), lo que causaba que se "borraran" al crecer
+     demasiado. Ahora cada cliente tiene su propio espacio. Si todavía
+     hay datos guardados a la manera antigua, los usamos como respaldo
+     y los movemos al nuevo formato la primera vez que carga. */
+  var legacyRoutines = null;
+  try { var legacy = await storageGet('routines-v1', true); if (legacy) legacyRoutines = JSON.parse(legacy); } catch(e){}
+
+  var routines = {};
+  await Promise.all(u.map(function(usr){
+    return storageGet('routines-v1:' + usr.id, true).then(function(v){
+      if (v){
+        routines[usr.id] = JSON.parse(v);
+      } else if (legacyRoutines && legacyRoutines[usr.id]){
+        routines[usr.id] = legacyRoutines[usr.id];
+        storageSet('routines-v1:' + usr.id, JSON.stringify(legacyRoutines[usr.id]), true);
+      }
+    });
+  }));
+
+  state.users = u; state.routines = routines; state.progress = p; state.comments = c; state.weights = w; state.chats = ch; state.setsDone = sd;
+  state.trainerAuth = tAuth;
+  state.trainerLoggedIn = !!(tAuth && tSession);
+  if (lastUser && u.find(function(x){ return x.id===lastUser; })) state.activeUserId = lastUser;
+  state.loading = false;
+  render();
+  if (usingRealStorage) setInterval(pollSharedData, POLL_MS);
+}
+init();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+</script>
+</body>
+</html>
